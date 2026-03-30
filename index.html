@@ -1,0 +1,858 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700;900&display=swap" rel="stylesheet">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>學員面談課前評估表｜聲音平衡教學系統</title>
+<style>
+:root {
+  --red-dark:   #C13318;
+  --red-main:   #EF4021;
+  --red-mid:    #EF4021;
+  --red-light:  #FEF0EC;
+  --red-pale:   #FFF7F5;
+  --gold:       #C9A84C;
+  --ink:        #1C1010;
+  --ink-soft:   #4A2010;
+  --muted:      #8C6050;
+  --border:     #F5CFCA;
+  --white:      #FFFFFF;
+  --bg:         #FDF8F7;
+}
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  font-family: 'Noto Sans TC', 'PingFang TC', 'Microsoft JhengHei', sans-serif;
+  background: var(--bg);
+  color: var(--ink);
+  min-height: 100vh;
+  padding: 2rem 1rem 4rem;
+}
+.page { max-width: 800px; margin: 0 auto; }
+
+/* ── Header ── */
+.header {
+  text-align: center;
+  padding: 2rem 0 1.5rem;
+  border-bottom: 3px solid var(--red-main);
+  margin-bottom: 2rem;
+  position: relative;
+}
+.brand {
+  display: flex; align-items: center; justify-content: center; gap: 12px;
+  margin-bottom: 1rem;
+}
+.brand-logo {
+  width: 52px; height: 52px;
+  background: var(--red-main);
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 20px; font-weight: 700; color: white; letter-spacing: -1px;
+}
+.brand-name { text-align: left; }
+.brand-name-cn { font-size: 15px; font-weight: 700; color: var(--red-dark); letter-spacing: 2px; }
+.brand-name-en { font-size: 10px; color: var(--muted); letter-spacing: 3px; margin-top: 2px; }
+.doc-title {
+  font-size: 26px; font-weight: 700; color: var(--red-dark);
+  letter-spacing: 4px; margin-bottom: 6px;
+}
+.doc-title-bar {
+  display: inline-block;
+  background: var(--red-main); color: white;
+  font-size: 22px; font-weight: 700; letter-spacing: 4px;
+  padding: 6px 32px; border-radius: 4px;
+}
+.date-row {
+  margin-top: 1.2rem;
+  display: flex; align-items: center; justify-content: flex-end; gap: 8px;
+  font-size: 14px; color: var(--ink-soft);
+}
+.date-input-wrap {
+  display: flex; align-items: center; gap: 6px;
+}
+.date-field {
+  border: none; border-bottom: 2px solid var(--red-main);
+  background: transparent; font-family: inherit; font-size: 20px;
+  color: var(--ink); text-align: center; outline: none; padding: 4px 6px;
+}
+.date-field.y { width: 72px; }
+.date-field.md { width: 42px; }
+.date-sep { color: var(--red-main); font-weight: 700; font-size: 20px; }
+
+/* ── Section ── */
+.section {
+  background: var(--white);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  margin-bottom: 1.2rem;
+  overflow: hidden;
+}
+.section-head {
+  background: var(--red-main);
+  color: white;
+  font-size: 15px; font-weight: 600; letter-spacing: 2px;
+  padding: 10px 20px;
+}
+.section-body { padding: 1.4rem 1.5rem; }
+
+/* ── Field ── */
+.field { margin-bottom: 1.1rem; }
+.field:last-child { margin-bottom: 0; }
+.label {
+  font-size: 12px; color: var(--muted); letter-spacing: 1px;
+  margin-bottom: 6px; display: block; font-family: sans-serif;
+}
+.req { color: var(--red-main); margin-left: 2px; }
+.row2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+.row3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; }
+
+input[type=text], select {
+  width: 100%; font-size: 14px; padding: 9px 12px;
+  border: 1.5px solid var(--border); border-radius: 6px;
+  background: var(--red-pale); color: var(--ink);
+  font-family: 'Noto Sans TC', sans-serif; outline: none;
+  transition: border-color 0.15s;
+  appearance: none; -webkit-appearance: none;
+}
+input[type=text]:focus, select:focus { border-color: var(--red-main); }
+select {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%23B22222' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 12px center;
+  padding-right: 36px;
+  cursor: pointer;
+}
+select option { font-family: sans-serif; }
+
+/* ── Chip ── */
+.chip-group { display: flex; flex-wrap: wrap; gap: 8px; }
+.chip {
+  padding: 6px 14px; border: 1.5px solid var(--border);
+  border-radius: 20px; font-size: 13px; color: var(--ink-soft);
+  background: var(--red-pale); cursor: pointer; user-select: none;
+  font-family: sans-serif; transition: all 0.15s;
+}
+.chip:hover { border-color: var(--red-mid); color: var(--red-dark); }
+.chip.sel {
+  background: var(--red-main); border-color: var(--red-main);
+  color: white; font-weight: 600;
+}
+.chip-hint {
+  font-size: 11px; color: var(--muted); font-family: sans-serif;
+  margin-bottom: 10px; letter-spacing: 0.5px;
+}
+
+/* ── Priority chips (numbered) ── */
+.priority-grid { display: flex; flex-wrap: wrap; gap: 8px; }
+.pchip {
+  position: relative;
+  padding: 6px 14px 6px 28px;
+  border: 1.5px solid var(--border); border-radius: 20px;
+  font-size: 13px; color: var(--ink-soft); background: var(--red-pale);
+  cursor: pointer; user-select: none; font-family: sans-serif; transition: all 0.15s;
+}
+.pchip:hover { border-color: var(--red-mid); }
+.pchip .num {
+  position: absolute; left: 8px; top: 50%; transform: translateY(-50%);
+  width: 16px; height: 16px; border-radius: 50%;
+  background: var(--border); color: var(--muted);
+  font-size: 10px; font-weight: 700; display: flex; align-items: center; justify-content: center;
+  font-family: sans-serif; transition: all 0.15s;
+}
+.pchip.sel { border-color: var(--red-main); color: var(--red-dark); background: var(--red-light); }
+.pchip.sel .num { background: var(--red-main); color: white; }
+
+/* ── Generate Button ── */
+.gen-wrap { margin-top: 2rem; }
+.gen-btn {
+  width: 100%; padding: 15px;
+  background: var(--red-main); color: white; border: none;
+  border-radius: 8px; font-size: 16px; font-weight: 700;
+  letter-spacing: 2px; font-family: 'Noto Sans TC', sans-serif;
+  cursor: pointer; transition: background 0.15s;
+}
+.gen-btn:hover { background: var(--red-dark); }
+.gen-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+.status { text-align: center; font-size: 13px; color: var(--muted); padding: 10px 0; display: none; font-family: sans-serif; }
+
+/* ── Preview ── */
+#preview-wrap { margin-top: 2rem; display: none; }
+#preview-wrap h3 { font-size: 14px; color: var(--muted); margin-bottom: 10px; font-family: sans-serif; font-weight: 400; letter-spacing: 1px; }
+#a4-canvas { border: 1px solid var(--border); border-radius: 6px; width: 100%; display: block; }
+.dl-btn {
+  width: 100%; margin-top: 12px; padding: 12px;
+  border: 2px solid var(--red-main); border-radius: 8px;
+  background: white; color: var(--red-main); font-size: 14px; font-weight: 700;
+  letter-spacing: 1px; font-family: 'Noto Sans TC', sans-serif; cursor: pointer; transition: all 0.15s;
+}
+.dl-btn:hover { background: var(--red-pale); }
+
+@media (max-width: 540px) {
+  .row2, .row3 { grid-template-columns: 1fr; }
+  .doc-title-bar { font-size: 18px; letter-spacing: 2px; padding: 6px 20px; }
+}
+</style>
+</head>
+<body>
+<div class="page">
+
+  <!-- Header -->
+  <div class="header">
+    <div class="brand">
+      <div class="brand-logo">VBS</div>
+      <div class="brand-name">
+        <div class="brand-name-cn">聲音平衡教學系統</div>
+        <div class="brand-name-en">VOCAL BALANCE SYSTEM</div>
+      </div>
+    </div>
+    <div class="doc-title-bar">學員面談課前評估表</div>
+    <div class="date-row">
+      <span style="font-family:sans-serif;font-size:15px;color:var(--muted);">面談日期</span>
+      <div class="date-input-wrap">
+        <input class="date-field y" type="text" id="d-year" placeholder="2026" maxlength="4">
+        <span class="date-sep">/</span>
+        <input class="date-field md" type="text" id="d-month" placeholder="03" maxlength="2">
+        <span class="date-sep">/</span>
+        <input class="date-field md" type="text" id="d-day" placeholder="25" maxlength="2">
+      </div>
+    </div>
+  </div>
+
+  <!-- 基本資料 -->
+  <div style="display:grid; grid-template-columns:1fr 1fr; gap:16px; margin-bottom:1.2rem;">
+    <div class="field" style="margin:0;">
+      <label class="label">學員姓名<span class="req">*</span></label>
+      <input type="text" id="stu-name" placeholder="請輸入學員姓名">
+    </div>
+    <div class="field" style="margin:0;">
+      <label class="label">面談教練<span class="req">*</span></label>
+      <select id="coach">
+        <option value="">請選擇教練</option>
+        <option>Leo 老師</option>
+        <option>Tobi 老師</option>
+        <option>府鑫老師</option>
+        <option>金樑老師</option>
+        <option>啟鋒老師</option>
+        <option>理坤老師</option>
+        <option>蒨時老師</option>
+        <option>蔓蔓老師</option>
+        <option>可馨老師</option>
+        <option>庭瑜老師</option>
+        <option>Dennis 老師</option>
+        <option>Lawa 老師</option>
+      </select>
+    </div>
+  </div>
+
+  <!-- 學員訴求 -->
+  <div class="section">
+    <div class="section-head">學員訴求（數字為優先順序）</div>
+    <div class="section-body">
+      <div class="chip-hint">點選訴求後，數字會依點選順序自動排列</div>
+      <div class="priority-grid" id="demand-group">
+        <div class="pchip" data-val="改善音準"><span class="num"></span>改善音準</div>
+        <div class="pchip" data-val="改善拍子"><span class="num"></span>改善拍子</div>
+        <div class="pchip" data-val="唱到高音"><span class="num"></span>唱到高音</div>
+        <div class="pchip" data-val="唱到低音"><span class="num"></span>唱到低音</div>
+        <div class="pchip" data-val="拓寬音域"><span class="num"></span>拓寬音域</div>
+        <div class="pchip" data-val="聲區連接"><span class="num"></span>聲區連接</div>
+        <div class="pchip" data-val="改善音色"><span class="num"></span>改善音色</div>
+        <div class="pchip" data-val="改善氣息"><span class="num"></span>改善氣息</div>
+        <div class="pchip" data-val="改善咬字"><span class="num"></span>改善咬字</div>
+        <div class="pchip" data-val="高音音色"><span class="num"></span>高音音色</div>
+        <div class="pchip" data-val="低音音色"><span class="num"></span>低音音色</div>
+        <div class="pchip" data-val="輕鬆說話"><span class="num"></span>輕鬆說話</div>
+        <div class="pchip" data-val="增加續航力"><span class="num"></span>增加續航力</div>
+        <div class="pchip" data-val="唱歌有感情"><span class="num"></span>唱歌有感情</div>
+        <div class="pchip" data-val="唱歌有特色"><span class="num"></span>唱歌有特色</div>
+        <div class="pchip" data-val="真假音轉換"><span class="num"></span>真假音轉換</div>
+      </div>
+      <div style="margin-top:20px; padding-top:16px; border-top:1px solid #F5CFCA; display:flex; align-items:center; gap:10px;">
+        <span style="font-size:13px; color:var(--muted); font-family:sans-serif; white-space:nowrap;">其他訴求：</span>
+        <input type="text" id="demand-other" placeholder="請填寫其他訴求（選填）" style="flex:1; font-size:13px; padding:8px 12px;">
+      </div>
+    </div>
+  </div>
+
+  <!-- 教練評估 -->
+  <div class="section">
+    <div class="section-head">教練評估</div>
+    <div class="section-body">
+      <div class="chip-hint" style="margin-bottom:14px;">點選分數後，雷達圖即時更新（1＝差　5＝好）</div>
+      <div id="eval-rows"></div>
+      <div style="display:flex; justify-content:center; margin:1.2rem 0 0.5rem;">
+        <canvas id="radar-canvas" width="300" height="300"></canvas>
+      </div>
+    </div>
+  </div>
+
+  <!-- 課程順序 -->
+  <div class="section">
+    <div class="section-head">課程順序（數字為優先順序）</div>
+    <div class="section-body">
+      <div class="chip-hint" style="margin-bottom:14px;">點選後，數字會依點選順序自動排列</div>
+      <div class="priority-grid" id="course-group">
+        <div class="pchip" data-val="甲杓發力"><span class="num"></span>甲杓發力</div>
+        <div class="pchip" data-val="環甲發力"><span class="num"></span>環甲發力</div>
+        <div class="pchip" data-val="阻抗平衡"><span class="num"></span>阻抗平衡</div>
+        <div class="pchip" data-val="演唱計畫"><span class="num"></span>演唱計畫</div>
+        <div class="pchip" data-val="氣息"><span class="num"></span>氣息</div>
+        <div class="pchip" data-val="音準"><span class="num"></span>音準</div>
+        <div class="pchip" data-val="拍子"><span class="num"></span>拍子</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 抵達目標所需堂數 -->
+  <div class="section">
+    <div class="section-head">抵達目標所需堂數</div>
+    <div class="section-body">
+      <div class="row2">
+        <div class="field">
+          <label class="label">所需堂數</label>
+          <select id="goal-lessons">
+            <option value="">請選擇</option>
+            <option>4 堂</option>
+            <option>8 堂</option>
+            <option>12 堂</option>
+            <option>16 堂</option>
+            <option>20 堂</option>
+            <option>24 堂或以上</option>
+          </select>
+        </div>
+        <div class="field">
+          <label class="label">建議上課頻率（選填）</label>
+          <div style="display:flex; align-items:center; gap:8px;">
+            <span style="font-size:13px; color:var(--ink-soft); font-family:sans-serif; white-space:nowrap;">每</span>
+            <select id="freq-weeks" style="flex:1;">
+              <option value="">—</option>
+              <option>1 週</option>
+              <option>2 週</option>
+            </select>
+            <select id="freq-times" style="flex:1;">
+              <option value="">—</option>
+              <option>1 次</option>
+              <option>2 次</option>
+              <option>3 次</option>
+              <option>4 次</option>
+            </select>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="gen-wrap">
+    <button class="gen-btn" id="gen-btn" onclick="generateReport()">生成評估表 JPG</button>
+    <div class="status" id="status">正在生成中，請稍候⋯⋯</div>
+  </div>
+
+  <div id="preview-wrap">
+    <h3>預覽（A4 格式）</h3>
+    <canvas id="a4-canvas"></canvas>
+    <button class="dl-btn" onclick="downloadJPG()">⬇ 下載 JPG 檔案</button>
+  </div>
+</div>
+
+<script>
+// ── 教練評估：七維度 ──
+const EVAL_AXES = [
+  { key: 'breath',   label: '氣息' },
+  { key: 'ta',       label: '甲杓發力' },
+  { key: 'ct',       label: '環甲發力' },
+  { key: 'balance',  label: '阻抗平衡' },
+  { key: 'pitch',    label: '音準' },
+  { key: 'rhythm',   label: '拍子' },
+  { key: 'plan',     label: '演唱計劃' },
+];
+const evalScores = {};
+EVAL_AXES.forEach(a => evalScores[a.key] = 0);
+
+const evalRowsEl = document.getElementById('eval-rows');
+EVAL_AXES.forEach(axis => {
+  const row = document.createElement('div');
+  row.style.cssText = 'display:flex;align-items:center;gap:12px;margin-bottom:12px;';
+  const lbl = document.createElement('div');
+  lbl.style.cssText = 'font-size:13px;color:#4A2010;font-family:sans-serif;width:72px;flex-shrink:0;';
+  lbl.textContent = axis.label;
+  const left = document.createElement('span');
+  left.style.cssText = 'font-size:11px;color:#8C6050;font-family:sans-serif;white-space:nowrap;';
+  left.textContent = '差';
+  const dots = document.createElement('div');
+  dots.style.cssText = 'display:flex;gap:6px;';
+  const right = document.createElement('span');
+  right.style.cssText = 'font-size:11px;color:#8C6050;font-family:sans-serif;white-space:nowrap;';
+  right.textContent = '好';
+  const val = document.createElement('div');
+  val.style.cssText = 'font-size:13px;font-weight:600;color:#C13318;font-family:sans-serif;width:32px;';
+  val.textContent = '—';
+  for (let i = 1; i <= 5; i++) {
+    const d = document.createElement('div');
+    d.style.cssText = 'width:30px;height:30px;border-radius:50%;border:1.5px solid #F5CFCA;background:#FFF7F5;cursor:pointer;font-size:12px;font-weight:600;color:#8C6050;display:flex;align-items:center;justify-content:center;font-family:sans-serif;transition:all 0.15s;';
+    d.textContent = i;
+    d.onmouseenter = () => { if (!d.classList.contains('eactive')) d.style.borderColor = '#EF4021'; };
+    d.onmouseleave = () => { if (!d.classList.contains('eactive')) d.style.borderColor = '#F5CFCA'; };
+    d.onclick = () => {
+      evalScores[axis.key] = i;
+      val.textContent = i + '/5';
+      dots.querySelectorAll('div').forEach((dd, idx) => {
+        const active = idx < i;
+        dd.classList.toggle('eactive', active);
+        dd.style.background = active ? '#EF4021' : '#FFF7F5';
+        dd.style.borderColor = active ? '#EF4021' : '#F5CFCA';
+        dd.style.color = active ? '#fff' : '#8C6050';
+      });
+      drawRadar();
+    };
+    dots.appendChild(d);
+  }
+  row.appendChild(lbl); row.appendChild(left); row.appendChild(dots); row.appendChild(right); row.appendChild(val);
+  evalRowsEl.appendChild(row);
+});
+
+// ── 雷達圖 ──
+const radarCanvas = document.getElementById('radar-canvas');
+const rctx = radarCanvas.getContext('2d');
+const CX = 150, CY = 150, R = 105, N = 7;
+
+function radarPt(i, v, max) {
+  const angle = (Math.PI * 2 / N) * i - Math.PI / 2;
+  return { x: CX + (v / max) * R * Math.cos(angle), y: CY + (v / max) * R * Math.sin(angle) };
+}
+
+function drawRadar() {
+  rctx.clearRect(0, 0, 300, 300);
+  const grid = 'rgba(239,64,33,0.1)', gridLine = 'rgba(239,64,33,0.15)';
+
+  // grid rings
+  for (let lv = 1; lv <= 5; lv++) {
+    rctx.beginPath();
+    for (let i = 0; i < N; i++) {
+      const p = radarPt(i, lv, 5);
+      i === 0 ? rctx.moveTo(p.x, p.y) : rctx.lineTo(p.x, p.y);
+    }
+    rctx.closePath();
+    rctx.strokeStyle = lv === 5 ? 'rgba(239,64,33,0.3)' : grid;
+    rctx.lineWidth = lv === 5 ? 1 : 0.7;
+    rctx.stroke();
+  }
+
+  // spokes
+  for (let i = 0; i < N; i++) {
+    const p = radarPt(i, 5, 5);
+    rctx.beginPath(); rctx.moveTo(CX, CY); rctx.lineTo(p.x, p.y);
+    rctx.strokeStyle = gridLine; rctx.lineWidth = 0.7; rctx.stroke();
+  }
+
+  // scale labels (差/好)
+  rctx.font = '10px sans-serif'; rctx.fillStyle = 'rgba(140,107,107,0.6)'; rctx.textAlign = 'center';
+  const p1 = radarPt(0, 1, 5), p5 = radarPt(0, 5, 5);
+  rctx.fillText('差', p1.x + 10, p1.y); rctx.fillText('好', p5.x + 10, p5.y - 4);
+
+  // axis labels
+  rctx.font = 'bold 12px sans-serif'; rctx.fillStyle = '#4A2010';
+  EVAL_AXES.forEach((axis, i) => {
+    const angle = (Math.PI * 2 / N) * i - Math.PI / 2;
+    const lx = CX + (R + 22) * Math.cos(angle);
+    const ly = CY + (R + 22) * Math.sin(angle);
+    rctx.textAlign = Math.abs(Math.cos(angle)) < 0.1 ? 'center' : Math.cos(angle) > 0 ? 'left' : 'right';
+    rctx.fillText(axis.label, lx, ly + 4);
+  });
+
+  // data polygon
+  const vals = EVAL_AXES.map(a => evalScores[a.key] || 0);
+  rctx.beginPath();
+  vals.forEach((v, i) => {
+    const p = radarPt(i, Math.max(v, 0.01), 5);
+    i === 0 ? rctx.moveTo(p.x, p.y) : rctx.lineTo(p.x, p.y);
+  });
+  rctx.closePath();
+  rctx.fillStyle = 'rgba(239,64,33,0.18)'; rctx.fill();
+  rctx.strokeStyle = '#EF4021'; rctx.lineWidth = 2; rctx.stroke();
+
+  // dots
+  vals.forEach((v, i) => {
+    if (!v) return;
+    const p = radarPt(i, v, 5);
+    rctx.beginPath(); rctx.arc(p.x, p.y, 4.5, 0, Math.PI * 2);
+    rctx.fillStyle = '#EF4021'; rctx.fill();
+    rctx.strokeStyle = '#fff'; rctx.lineWidth = 1.5; rctx.stroke();
+  });
+}
+drawRadar();
+const demandOrder = [];
+document.querySelectorAll('#demand-group .pchip').forEach(chip => {
+  chip.addEventListener('click', () => {
+    const val = chip.dataset.val;
+    if (chip.classList.contains('sel')) {
+      const idx = demandOrder.indexOf(val);
+      if (idx > -1) demandOrder.splice(idx, 1);
+      chip.classList.remove('sel');
+      chip.querySelector('.num').textContent = '';
+    } else {
+      demandOrder.push(val);
+      chip.classList.add('sel');
+      chip.querySelector('.num').textContent = demandOrder.length;
+    }
+    document.querySelectorAll('#demand-group .pchip.sel').forEach(c => {
+      c.querySelector('.num').textContent = demandOrder.indexOf(c.dataset.val) + 1;
+    });
+  });
+});
+
+// ── 課程順序 ──
+const courseOrder = [];
+document.querySelectorAll('#course-group .pchip').forEach(chip => {
+  chip.addEventListener('click', () => {
+    const val = chip.dataset.val;
+    if (chip.classList.contains('sel')) {
+      const idx = courseOrder.indexOf(val);
+      if (idx > -1) courseOrder.splice(idx, 1);
+      chip.classList.remove('sel');
+      chip.querySelector('.num').textContent = '';
+    } else {
+      courseOrder.push(val);
+      chip.classList.add('sel');
+    }
+    document.querySelectorAll('#course-group .pchip.sel').forEach(c => {
+      c.querySelector('.num').textContent = courseOrder.indexOf(c.dataset.val) + 1;
+    });
+  });
+});
+
+// ── Canvas helpers ──
+function getDate() {
+  const y = document.getElementById('d-year').value || '____';
+  const m = document.getElementById('d-month').value || '__';
+  const d = document.getElementById('d-day').value || '__';
+  return y + ' / ' + m + ' / ' + d;
+}
+
+function wrapText(ctx, text, x, y, maxW, lh) {
+  if (!text) return y;
+  const chars = text.split('');
+  let line = '', cy = y;
+  for (let i = 0; i < chars.length; i++) {
+    const t = line + chars[i];
+    if (ctx.measureText(t).width > maxW && line) { ctx.fillText(line, x, cy); line = chars[i]; cy += lh; }
+    else line = t;
+  }
+  if (line) { ctx.fillText(line, x, cy); cy += lh; }
+  return cy;
+}
+
+function roundRect(ctx, x, y, w, h, r) {
+  ctx.beginPath(); ctx.moveTo(x + r, y);
+  ctx.lineTo(x + w - r, y); ctx.arcTo(x + w, y, x + w, y + r, r);
+  ctx.lineTo(x + w, y + h - r); ctx.arcTo(x + w, y + h, x + w - r, y + h, r);
+  ctx.lineTo(x + r, y + h); ctx.arcTo(x, y + h, x, y + h - r, r);
+  ctx.lineTo(x, y + r); ctx.arcTo(x, y, x + r, y, r);
+  ctx.closePath();
+}
+
+function generateReport() {
+  const name = document.getElementById('stu-name').value.trim();
+  if (!name) { alert('請填寫學員姓名'); return; }
+  document.getElementById('gen-btn').disabled = true;
+  document.getElementById('status').style.display = 'block';
+
+  setTimeout(() => {
+    const W = 794, H = 1123;
+    const canvas = document.getElementById('a4-canvas');
+    canvas.width = W; canvas.height = H;
+    const ctx = canvas.getContext('2d');
+
+    const RED = '#EF4021', RED_DARK = '#C13318', RED_LIGHT = '#FEF0EC', RED_PALE = '#FFF7F5';
+    const INK = '#1C1010', MUTED = '#8C6050', BORDER = '#F5CFCA', WHITE = '#FFFFFF';
+
+    ctx.fillStyle = '#FDF8F7'; ctx.fillRect(0, 0, W, H);
+
+    // ── Header ──
+    ctx.fillStyle = WHITE; ctx.fillRect(0, 0, W, 110);
+    ctx.fillStyle = RED; ctx.fillRect(0, 110, W, 4);
+
+    // Logo circle
+    ctx.fillStyle = RED;
+    ctx.beginPath(); ctx.arc(60, 55, 30, 0, Math.PI * 2); ctx.fill();
+    ctx.fillStyle = WHITE; ctx.font = '700 16px "Noto Sans TC", sans-serif';
+    ctx.textAlign = 'center'; ctx.fillText('VBS', 60, 61);
+
+    ctx.textAlign = 'left';
+    ctx.fillStyle = RED_DARK; ctx.font = '600 14px "Noto Sans TC", sans-serif';
+    ctx.fillText('聲音平衡教學系統', 102, 48);
+    ctx.fillStyle = MUTED; ctx.font = '9px "Noto Sans TC", sans-serif';
+    ctx.fillText('VOCAL BALANCE SYSTEM', 103, 62);
+
+    // Title bar
+    const titleW = 320, titleH = 36, titleX = (W - titleW) / 2, titleY = 70;
+    ctx.fillStyle = RED;
+    roundRect(ctx, titleX, titleY, titleW, titleH, 4); ctx.fill();
+    ctx.fillStyle = WHITE; ctx.font = '700 20px "Noto Sans TC", sans-serif';
+    ctx.textAlign = 'center'; ctx.fillText('學員面談課前評估表', W / 2, titleY + 25);
+
+    // Date (top right)
+    ctx.textAlign = 'right'; ctx.fillStyle = MUTED; ctx.font = '11px sans-serif';
+    ctx.fillText('面談日期：' + getDate(), W - 40, 30);
+
+    // ── Section helper ──
+    let y = 130;
+    const pad = 44;
+    const contentW = W - pad * 2;
+
+    function secHeader(title, yy) {
+      ctx.fillStyle = RED;
+      ctx.fillRect(pad, yy, contentW, 34);
+      ctx.fillStyle = WHITE; ctx.font = '600 14px "Noto Sans TC", sans-serif';
+      ctx.textAlign = 'left'; ctx.fillText(title, pad + 16, yy + 22);
+      return yy + 34;
+    }
+
+    function secBox(yStart, yEnd) {
+      ctx.strokeStyle = BORDER; ctx.lineWidth = 1;
+      roundRect(ctx, pad, yStart, contentW, yEnd - yStart, 6); ctx.stroke();
+    }
+
+    // ── 基本資料 ──
+    y += 26;
+    ctx.fillStyle = MUTED; ctx.font = '11px sans-serif'; ctx.textAlign = 'left';
+    ctx.fillText('學員姓名', pad, y);
+    ctx.fillStyle = INK; ctx.font = '700 15px "Noto Sans TC", sans-serif';
+    ctx.fillText(name, pad + 68, y);
+
+    ctx.fillStyle = MUTED; ctx.font = '11px sans-serif';
+    ctx.fillText('面談教練', pad + contentW / 2, y);
+    ctx.fillStyle = INK; ctx.font = '700 15px "Noto Sans TC", sans-serif';
+    const coach = document.getElementById('coach').value || '（未選擇）';
+    ctx.fillText(coach, pad + contentW / 2 + 68, y);
+
+    // underlines
+    ctx.strokeStyle = BORDER; ctx.lineWidth = 0.8;
+    ctx.beginPath(); ctx.moveTo(pad + 68, y + 5); ctx.lineTo(pad + contentW / 2 - 16, y + 5); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(pad + contentW / 2 + 68, y + 5); ctx.lineTo(pad + contentW, y + 5); ctx.stroke();
+
+    y += 30;
+
+    // ── 學員訴求 ──
+    const s2y = y;
+    y = secHeader('學員訴求（數字為優先順序）', y);
+    y += 26;
+
+    const chips = document.querySelectorAll('#demand-group .pchip');
+    const chipH = 22, chipGapX = 10, chipGapY = 10;
+    let cx = pad + 16, cy = y;
+
+    chips.forEach(chip => {
+      const val = chip.dataset.val;
+      const isSel = chip.classList.contains('sel');
+      const numVal = isSel ? demandOrder.indexOf(val) + 1 : 0;
+      const textW = ctx.measureText(val).width;
+      const chipW = textW + (isSel ? 44 : 24);
+
+      if (cx + chipW > pad + contentW - 16) { cx = pad + 16; cy += chipH + chipGapY; }
+
+      if (isSel) {
+        ctx.fillStyle = RED;
+        roundRect(ctx, cx, cy, chipW, chipH, 11); ctx.fill();
+        // number circle
+        ctx.fillStyle = WHITE; ctx.beginPath();
+        ctx.arc(cx + 12, cy + chipH / 2, 8, 0, Math.PI * 2); ctx.fill();
+        ctx.fillStyle = RED; ctx.font = 'bold 10px sans-serif'; ctx.textAlign = 'center';
+        ctx.fillText(numVal, cx + 12, cy + chipH / 2 + 3.5);
+        ctx.fillStyle = WHITE; ctx.font = '12px sans-serif'; ctx.textAlign = 'left';
+        ctx.fillText(val, cx + 24, cy + chipH / 2 + 4.5);
+      } else {
+        ctx.strokeStyle = BORDER; ctx.lineWidth = 1;
+        roundRect(ctx, cx, cy, chipW, chipH, 11); ctx.stroke();
+        ctx.fillStyle = '#D4907E'; ctx.font = '12px sans-serif'; ctx.textAlign = 'left';
+        ctx.fillText(val, cx + 12, cy + chipH / 2 + 4.5);
+      }
+      cx += chipW + chipGapX;
+    });
+
+    y = cy + chipH + 32;
+
+    // 其他訴求填空（有填才顯示）
+    const otherDemand = document.getElementById('demand-other').value.trim();
+    if (otherDemand) {
+      ctx.strokeStyle = BORDER; ctx.lineWidth = 0.5;
+      ctx.beginPath(); ctx.moveTo(pad + 16, y - 10); ctx.lineTo(pad + contentW - 16, y - 10); ctx.stroke();
+      y += 14;
+      ctx.fillStyle = MUTED; ctx.font = '11px sans-serif'; ctx.textAlign = 'left';
+      ctx.fillText('其他訴求：', pad + 16, y);
+      ctx.fillStyle = INK; ctx.font = '13px sans-serif';
+      ctx.fillText(otherDemand, pad + 76, y);
+      y += 32;
+    }
+
+    secBox(s2y, y);
+    y += 20;
+
+    // ── 教練評估 ──
+    const s3y = y;
+    y = secHeader('教練評估', y);
+    y += 30;
+
+    const rcx = W / 2, rcy = y + 108, rr = 100, rn = 7;
+    function rpt(i, v, mx) {
+      const angle = (Math.PI * 2 / rn) * i - Math.PI / 2;
+      return { x: rcx + (v / mx) * rr * Math.cos(angle), y: rcy + (v / mx) * rr * Math.sin(angle) };
+    }
+    for (let lv = 1; lv <= 5; lv++) {
+      ctx.beginPath();
+      for (let i = 0; i < rn; i++) { const p = rpt(i, lv, 5); i === 0 ? ctx.moveTo(p.x, p.y) : ctx.lineTo(p.x, p.y); }
+      ctx.closePath();
+      ctx.strokeStyle = lv === 5 ? 'rgba(239,64,33,0.35)' : 'rgba(239,64,33,0.12)';
+      ctx.lineWidth = lv === 5 ? 1 : 0.7; ctx.stroke();
+    }
+    for (let i = 0; i < rn; i++) {
+      const p = rpt(i, 5, 5);
+      ctx.beginPath(); ctx.moveTo(rcx, rcy); ctx.lineTo(p.x, p.y);
+      ctx.strokeStyle = 'rgba(239,64,33,0.15)'; ctx.lineWidth = 0.7; ctx.stroke();
+    }
+    ctx.font = '600 12px "Noto Sans TC", sans-serif'; ctx.fillStyle = '#4A2010';
+    EVAL_AXES.forEach((axis, i) => {
+      const angle = (Math.PI * 2 / rn) * i - Math.PI / 2;
+      const lx = rcx + (rr + 22) * Math.cos(angle);
+      const ly = rcy + (rr + 22) * Math.sin(angle);
+      ctx.textAlign = Math.abs(Math.cos(angle)) < 0.15 ? 'center' : Math.cos(angle) > 0 ? 'left' : 'right';
+      ctx.fillText(axis.label, lx, ly + 4);
+    });
+    ctx.font = '10px sans-serif'; ctx.fillStyle = 'rgba(140,96,80,0.6)'; ctx.textAlign = 'center';
+    const rp1 = rpt(0, 1, 5), rp5 = rpt(0, 5, 5);
+    ctx.fillText('差', rp1.x + 12, rp1.y + 1); ctx.fillText('好', rp5.x + 12, rp5.y - 3);
+    const rvals = EVAL_AXES.map(a => evalScores[a.key] || 0);
+    ctx.beginPath();
+    rvals.forEach((v, i) => { const p = rpt(i, Math.max(v, 0.01), 5); i === 0 ? ctx.moveTo(p.x, p.y) : ctx.lineTo(p.x, p.y); });
+    ctx.closePath();
+    ctx.fillStyle = 'rgba(239,64,33,0.15)'; ctx.fill();
+    ctx.strokeStyle = '#EF4021'; ctx.lineWidth = 2; ctx.stroke();
+    rvals.forEach((v, i) => {
+      if (!v) return;
+      const p = rpt(i, v, 5);
+      ctx.beginPath(); ctx.arc(p.x, p.y, 4.5, 0, Math.PI * 2);
+      ctx.fillStyle = '#EF4021'; ctx.fill();
+      ctx.strokeStyle = '#fff'; ctx.lineWidth = 1.5; ctx.stroke();
+    });
+
+    // 分數列表
+    y = rcy + rr + 36;
+    const scoreColW = contentW / 4;
+    EVAL_AXES.forEach((axis, i) => {
+      const col = i % 4, row = Math.floor(i / 4);
+      const sx = pad + 16 + col * scoreColW;
+      const sy = y + row * 22;
+      ctx.fillStyle = MUTED; ctx.font = '11px sans-serif'; ctx.textAlign = 'left';
+      ctx.fillText(axis.label, sx, sy);
+      const sv = evalScores[axis.key] || 0;
+      for (let j = 1; j <= 5; j++) {
+        ctx.beginPath(); ctx.arc(sx + 52 + (j - 1) * 12, sy - 4, 4, 0, Math.PI * 2);
+        ctx.fillStyle = j <= sv ? '#EF4021' : '#F5CFCA'; ctx.fill();
+      }
+    });
+    y += Math.ceil(EVAL_AXES.length / 4) * 22 + 16;
+    secBox(s3y, y);
+    y += 20;
+
+    // ── 課程順序 ──
+    const s4y = y;
+    y = secHeader('課程順序（數字為優先順序）', y);
+    y += 26;
+
+    const courseChips = document.querySelectorAll('#course-group .pchip');
+    const cChipH = 26, cChipGapX = 10, cChipGapY = 10;
+    let ccx = pad + 16, ccy = y;
+
+    ctx.font = '13px "Noto Sans TC", sans-serif';
+    courseChips.forEach(chip => {
+      const val = chip.dataset.val;
+      const isSel = chip.classList.contains('sel');
+      const numVal = isSel ? courseOrder.indexOf(val) + 1 : 0;
+      const tw = ctx.measureText(val).width;
+      const cw = tw + (isSel ? 50 : 28);
+
+      if (ccx + cw > pad + contentW - 16) { ccx = pad + 16; ccy += cChipH + cChipGapY; }
+
+      if (isSel) {
+        ctx.fillStyle = RED_DARK;
+        roundRect(ctx, ccx, ccy, cw, cChipH, 13); ctx.fill();
+        ctx.fillStyle = 'rgba(255,255,255,0.25)';
+        ctx.beginPath(); ctx.arc(ccx + 14, ccy + cChipH / 2, 10, 0, Math.PI * 2); ctx.fill();
+        ctx.fillStyle = WHITE; ctx.font = 'bold 11px sans-serif'; ctx.textAlign = 'center';
+        ctx.fillText(numVal, ccx + 14, ccy + cChipH / 2 + 4);
+        ctx.fillStyle = WHITE; ctx.font = '13px "Noto Sans TC", sans-serif'; ctx.textAlign = 'left';
+        ctx.fillText(val, ccx + 28, ccy + cChipH / 2 + 5);
+      } else {
+        ctx.strokeStyle = BORDER; ctx.lineWidth = 1;
+        roundRect(ctx, ccx, ccy, cw, cChipH, 13); ctx.stroke();
+        ctx.fillStyle = '#D4907E'; ctx.font = '13px "Noto Sans TC", sans-serif'; ctx.textAlign = 'left';
+        ctx.fillText(val, ccx + 14, ccy + cChipH / 2 + 5);
+      }
+      ccx += cw + cChipGapX;
+    });
+
+    y = ccy + cChipH + 24;
+    secBox(s4y, y);
+    y += 20;
+
+    // ── 抵達目標所需堂數 ──
+    const s5y = y;
+    y = secHeader('抵達目標所需堂數', y);
+    y += 28;
+
+    const goalLessons = document.getElementById('goal-lessons').value;
+    const freqWeeks   = document.getElementById('freq-weeks').value;
+    const freqTimes   = document.getElementById('freq-times').value;
+
+    // 所需堂數
+    ctx.fillStyle = MUTED; ctx.font = '11px sans-serif'; ctx.textAlign = 'left';
+    ctx.fillText('所需堂數', pad + 16, y);
+    ctx.fillStyle = INK; ctx.font = '700 18px "Noto Sans TC", sans-serif';
+    ctx.fillText(goalLessons || '—', pad + 76, y);
+
+    // 頻率
+    if (freqWeeks || freqTimes) {
+      ctx.fillStyle = MUTED; ctx.font = '11px sans-serif'; ctx.textAlign = 'left';
+      ctx.fillText('建議頻率', pad + contentW / 2 + 16, y);
+      const freqStr = '每 ' + (freqWeeks || '—') + '　' + (freqTimes || '—');
+      ctx.fillStyle = INK; ctx.font = '700 16px "Noto Sans TC", sans-serif';
+      ctx.fillText(freqStr, pad + contentW / 2 + 76, y);
+    }
+
+    // underlines
+    ctx.strokeStyle = BORDER; ctx.lineWidth = 0.8;
+    ctx.beginPath(); ctx.moveTo(pad + 76, y + 5); ctx.lineTo(pad + contentW / 2 - 20, y + 5); ctx.stroke();
+    if (freqWeeks || freqTimes) {
+      ctx.beginPath(); ctx.moveTo(pad + contentW / 2 + 76, y + 5); ctx.lineTo(pad + contentW - 16, y + 5); ctx.stroke();
+    }
+
+    y += 36;
+    secBox(s5y, y);
+    y += 20;
+
+    // ── Footer ──
+    const footY = H - 50;
+    ctx.fillStyle = RED; ctx.fillRect(0, footY, W, 50);
+    ctx.fillStyle = 'rgba(255,255,255,0.7)'; ctx.font = '12px sans-serif'; ctx.textAlign = 'center';
+    ctx.fillText('聲音平衡教學系統｜VOCAL BALANCE SYSTEM', W / 2, footY + 30);
+
+    document.getElementById('preview-wrap').style.display = 'block';
+    document.getElementById('status').style.display = 'none';
+    document.getElementById('gen-btn').disabled = false;
+    document.getElementById('preview-wrap').scrollIntoView({ behavior: 'smooth' });
+  }, 250);
+}
+
+function downloadJPG() {
+  const canvas = document.getElementById('a4-canvas');
+  const name = document.getElementById('stu-name').value || '學員';
+  const y = document.getElementById('d-year').value || '';
+  const m = document.getElementById('d-month').value || '';
+  const d = document.getElementById('d-day').value || '';
+  const link = document.createElement('a');
+  link.download = '面談評估表_' + name + '_' + y + m + d + '.jpg';
+  link.href = canvas.toDataURL('image/jpeg', 0.95);
+  link.click();
+}
+</script>
+</body>
+</html>
