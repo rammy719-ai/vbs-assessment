@@ -569,19 +569,22 @@ function generateReport() {
   document.getElementById('status').style.display = 'block';
 
   setTimeout(() => {
-    const W = 794, H = 1123;
+    const SCALE = 2.083;
+    const W = Math.round(794 * SCALE), H = Math.round(1123 * SCALE);
     const canvas = document.getElementById('a4-canvas');
     canvas.width = W; canvas.height = H;
     const ctx = canvas.getContext('2d');
+    ctx.scale(SCALE, SCALE);
+    const Wl = 794, Hl = 1123;
 
     const RED = '#EF4021', RED_DARK = '#C13318', RED_LIGHT = '#FEF0EC', RED_PALE = '#FFF7F5';
     const INK = '#1C1010', MUTED = '#8C6050', BORDER = '#F5CFCA', WHITE = '#FFFFFF';
 
-    ctx.fillStyle = '#FDF8F7'; ctx.fillRect(0, 0, W, H);
+    ctx.fillStyle = '#FDF8F7'; ctx.fillRect(0, 0, Wl, Hl);
 
     // ── Header ──
-    ctx.fillStyle = WHITE; ctx.fillRect(0, 0, W, 110);
-    ctx.fillStyle = RED; ctx.fillRect(0, 110, W, 4);
+    ctx.fillStyle = WHITE; ctx.fillRect(0, 0, Wl, 110);
+    ctx.fillStyle = RED; ctx.fillRect(0, 110, Wl, 4);
 
     // Logo circle
     ctx.fillStyle = RED;
@@ -596,20 +599,20 @@ function generateReport() {
     ctx.fillText('VOCAL BALANCE SYSTEM', 103, 62);
 
     // Title bar
-    const titleW = 320, titleH = 36, titleX = (W - titleW) / 2, titleY = 70;
+    const titleW = 320, titleH = 36, titleX = (Wl - titleW) / 2, titleY = 70;
     ctx.fillStyle = RED;
     roundRect(ctx, titleX, titleY, titleW, titleH, 4); ctx.fill();
     ctx.fillStyle = WHITE; ctx.font = '700 20px "Noto Sans TC", sans-serif';
-    ctx.textAlign = 'center'; ctx.fillText('學員面談課前評估表', W / 2, titleY + 25);
+    ctx.textAlign = 'center'; ctx.fillText('學員面談課前評估表', Wl / 2, titleY + 25);
 
     // Date (top right)
     ctx.textAlign = 'right'; ctx.fillStyle = MUTED; ctx.font = '11px sans-serif';
-    ctx.fillText('面談日期：' + getDate(), W - 40, 30);
+    ctx.fillText('面談日期：' + getDate(), Wl - 40, 30);
 
     // ── Section helper ──
     let y = 130;
     const pad = 44;
-    const contentW = W - pad * 2;
+    const contentW = Wl - pad * 2;
 
     function secHeader(title, yy) {
       ctx.fillStyle = RED;
@@ -704,7 +707,7 @@ function generateReport() {
     y = secHeader('教練評估', y);
     y += 30;
 
-    const rcx = W / 2, rcy = y + 108, rr = 100, rn = 7;
+    const rcx = Wl / 2, rcy = y + 108, rr = 100, rn = 7;
     function rpt(i, v, mx) {
       const angle = (Math.PI * 2 / rn) * i - Math.PI / 2;
       return { x: rcx + (v / mx) * rr * Math.cos(angle), y: rcy + (v / mx) * rr * Math.sin(angle) };
@@ -842,10 +845,10 @@ function generateReport() {
     y += 20;
 
     // ── Footer ──
-    const footY = H - 50;
-    ctx.fillStyle = RED; ctx.fillRect(0, footY, W, 50);
+    const footY = Hl - 50;
+    ctx.fillStyle = RED; ctx.fillRect(0, footY, Wl, 50);
     ctx.fillStyle = 'rgba(255,255,255,0.7)'; ctx.font = '12px sans-serif'; ctx.textAlign = 'center';
-    ctx.fillText('聲音平衡教學系統｜VOCAL BALANCE SYSTEM', W / 2, footY + 30);
+    ctx.fillText('聲音平衡教學系統｜VOCAL BALANCE SYSTEM', Wl / 2, footY + 30);
 
     document.getElementById('preview-wrap').style.display = 'block';
     document.getElementById('status').style.display = 'none';
