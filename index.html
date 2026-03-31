@@ -201,13 +201,16 @@ select option { font-family: sans-serif; }
     <div class="brand">
       <div class="brand-logo">VBS</div>
       <div class="brand-name">
-        <div class="brand-name-cn">聲音平衡教學系統</div>
+        <div class="brand-name-cn" data-i18n="brandCn">聲音平衡教學系統</div>
         <div class="brand-name-en">VOCAL BALANCE SYSTEM</div>
       </div>
     </div>
-    <div class="doc-title-bar">學員面談課前評估表</div>
+    <div style="display:flex; justify-content:flex-end; margin-bottom:0.6rem;">
+      <button id="lang-btn" onclick="toggleLang()" style="background:transparent; border:1.5px solid var(--red-main); border-radius:20px; padding:4px 16px; font-size:12px; font-weight:600; color:var(--red-main); cursor:pointer; font-family:inherit; letter-spacing:1px; transition:all 0.15s;">简体</button>
+    </div>
+    <div class="doc-title-bar" data-i18n="docTitle">學員面談課前評估表</div>
     <div class="date-row">
-      <span style="font-family:sans-serif;font-size:15px;color:var(--muted);">面談日期</span>
+      <span style="font-family:sans-serif;font-size:15px;color:var(--muted);" data-i18n="dateLabel">面談日期</span>
       <div class="date-input-wrap">
         <input class="date-field y" type="text" id="d-year" placeholder="2026" maxlength="4">
         <span class="date-sep">/</span>
@@ -221,13 +224,13 @@ select option { font-family: sans-serif; }
   <!-- 基本資料 -->
   <div style="display:grid; grid-template-columns:1fr 1fr; gap:16px; margin-bottom:1.2rem;">
     <div class="field" style="margin:0;">
-      <label class="label">學員姓名<span class="req">*</span></label>
+      <label class="label">data-i18n="stuName">學員姓名<span class="req">*</span></label>
       <input type="text" id="stu-name" placeholder="請輸入學員姓名">
     </div>
     <div class="field" style="margin:0;">
-      <label class="label">面談教練<span class="req">*</span></label>
+      <label class="label">data-i18n="coachLabel">面談教練<span class="req">*</span></label>
       <select id="coach">
-        <option value="">請選擇教練</option>
+        <option value="" data-i18n="coachPlaceholder">請選擇教練</option>
         <option>Leo 老師</option>
         <option>Tobi 老師</option>
         <option>府鑫老師</option>
@@ -246,9 +249,9 @@ select option { font-family: sans-serif; }
 
   <!-- 學員訴求 -->
   <div class="section">
-    <div class="section-head">學員訴求（數字為優先順序）</div>
+    <div class="section-head" data-i18n="demandTitle">學員訴求（數字為優先順序）</div>
     <div class="section-body">
-      <div class="chip-hint">點選訴求後，數字會依點選順序自動排列</div>
+      <div class="chip-hint" data-i18n="demandHint">點選訴求後，數字會依點選順序自動排列</div>
       <div class="priority-grid" id="demand-group">
         <div class="pchip" data-val="改善音準"><span class="num"></span>改善音準</div>
         <div class="pchip" data-val="改善拍子"><span class="num"></span>改善拍子</div>
@@ -268,17 +271,17 @@ select option { font-family: sans-serif; }
         <div class="pchip" data-val="真假音轉換"><span class="num"></span>真假音轉換</div>
       </div>
       <div style="margin-top:20px; padding-top:16px; border-top:1px solid #F5CFCA; display:flex; align-items:center; gap:10px;">
-        <span style="font-size:13px; color:var(--muted); font-family:sans-serif; white-space:nowrap;">其他訴求：</span>
-        <input type="text" id="demand-other" placeholder="請填寫其他訴求（選填）" style="flex:1; font-size:13px; padding:8px 12px;">
+        <span style="font-size:13px; color:var(--muted); font-family:sans-serif; white-space:nowrap;" data-i18n="demandOther">其他訴求：</span>
+        <input type="text" id="demand-other" data-i18n-ph="demandOtherPh" placeholder="請填寫其他訴求（選填）" style="flex:1; font-size:13px; padding:8px 12px;">
       </div>
     </div>
   </div>
 
   <!-- 教練評估 -->
   <div class="section">
-    <div class="section-head">教練評估</div>
+    <div class="section-head" data-i18n="evalTitle">教練評估</div>
     <div class="section-body">
-      <div class="chip-hint" style="margin-bottom:14px;">點選分數後，雷達圖即時更新（1＝差　5＝好）</div>
+      <div class="chip-hint" style="margin-bottom:14px;" data-i18n="evalHint">點選分數後，雷達圖即時更新（1＝差　5＝好）</div>
       <div id="eval-rows"></div>
       <div style="display:flex; justify-content:center; margin:1.2rem 0 0.5rem;">
         <canvas id="radar-canvas" width="300" height="300"></canvas>
@@ -288,9 +291,9 @@ select option { font-family: sans-serif; }
 
   <!-- 課程順序 -->
   <div class="section">
-    <div class="section-head">課程順序（數字為優先順序）</div>
+    <div class="section-head" data-i18n="courseTitle">課程順序（數字為優先順序）</div>
     <div class="section-body">
-      <div class="chip-hint" style="margin-bottom:14px;">點選後，數字會依點選順序自動排列</div>
+      <div class="chip-hint" style="margin-bottom:14px;" data-i18n="courseHint">點選後，數字會依點選順序自動排列</div>
       <div class="priority-grid" id="course-group">
         <div class="pchip" data-val="甲杓發力"><span class="num"></span>甲杓發力</div>
         <div class="pchip" data-val="環甲發力"><span class="num"></span>環甲發力</div>
@@ -305,13 +308,13 @@ select option { font-family: sans-serif; }
 
   <!-- 抵達目標所需堂數 -->
   <div class="section">
-    <div class="section-head">抵達目標所需堂數</div>
+    <div class="section-head" data-i18n="goalTitle">抵達目標所需堂數</div>
     <div class="section-body">
       <div class="row2">
         <div class="field">
-          <label class="label">所需堂數</label>
+          <label class="label" data-i18n="goalLessonsLabel">所需堂數</label>
           <select id="goal-lessons">
-            <option value="">請選擇</option>
+            <option value="" data-i18n="goalLessonsPlaceholder">請選擇</option>
             <option>4 堂</option>
             <option>8 堂</option>
             <option>12 堂</option>
@@ -321,9 +324,9 @@ select option { font-family: sans-serif; }
           </select>
         </div>
         <div class="field">
-          <label class="label">建議上課頻率（選填）</label>
+          <label class="label" data-i18n="freqLabel">建議上課頻率（選填）</label>
           <div style="display:flex; align-items:center; gap:8px;">
-            <span style="font-size:13px; color:var(--ink-soft); font-family:sans-serif; white-space:nowrap;">每</span>
+            <span style="font-size:13px; color:var(--ink-soft); font-family:sans-serif; white-space:nowrap;" data-i18n="freqPer">每</span>
             <select id="freq-weeks" style="flex:1;">
               <option value="">—</option>
               <option>1 週</option>
@@ -343,14 +346,14 @@ select option { font-family: sans-serif; }
   </div>
 
   <div class="gen-wrap">
-    <button class="gen-btn" id="gen-btn" onclick="generateReport()">生成評估表 JPG</button>
+    <button class="gen-btn" id="gen-btn" onclick="generateReport()" data-i18n="genBtn">生成評估表 JPG</button>
     <div class="status" id="status">正在生成中，請稍候⋯⋯</div>
   </div>
 
   <div id="preview-wrap">
-    <h3>預覽（A4 格式）</h3>
+    <h3 data-i18n="previewTitle">預覽（A4 格式）</h3>
     <canvas id="a4-canvas"></canvas>
-    <button class="dl-btn" onclick="downloadJPG()">⬇ 下載 JPG 檔案</button>
+    <button class="dl-btn" onclick="downloadJPG()" data-i18n="dlBtn">⬇ 下載 JPG 檔案</button>
   </div>
 </div>
 
@@ -480,6 +483,15 @@ function drawRadar() {
   });
 }
 drawRadar();
+
+// ── 自動帶入今天日期 ──
+(function() {
+  const now = new Date();
+  document.getElementById('d-year').value  = now.getFullYear();
+  document.getElementById('d-month').value = String(now.getMonth() + 1).padStart(2, '0');
+  document.getElementById('d-day').value   = String(now.getDate()).padStart(2, '0');
+})();
+
 const demandOrder = [];
 document.querySelectorAll('#demand-group .pchip').forEach(chip => {
   chip.addEventListener('click', () => {
@@ -853,6 +865,168 @@ function downloadJPG() {
   link.href = canvas.toDataURL('image/jpeg', 0.95);
   link.click();
 }
+
+// ── 語言切換 ──
+const LANGS = {
+  tw: {
+    brandCn: '聲音平衡教學系統',
+    docTitle: '學員面談課前評估表',
+    dateLabel: '面談日期',
+    stuName: '學員姓名',
+    stuNamePh: '請輸入學員姓名',
+    coachLabel: '面談教練',
+    coachPlaceholder: '請選擇教練',
+    demandTitle: '學員訴求（數字為優先順序）',
+    demandHint: '點選訴求後，數字會依點選順序自動排列',
+    demandOther: '其他訴求：',
+    demandOtherPh: '請填寫其他訴求（選填）',
+    evalTitle: '教練評估',
+    evalHint: '點選分數後，雷達圖即時更新（1＝差　5＝好）',
+    courseTitle: '課程順序（數字為優先順序）',
+    courseHint: '點選後，數字會依點選順序自動排列',
+    goalTitle: '抵達目標所需堂數',
+    goalLessonsLabel: '所需堂數',
+    goalLessonsPlaceholder: '請選擇',
+    freqLabel: '建議上課頻率（選填）',
+    freqPer: '每',
+    genBtn: '生成評估表 JPG',
+    dlBtn: '⬇ 下載 JPG 檔案',
+    previewTitle: '預覽（A4 格式）',
+    evalAxes: ['氣息','甲杓發力','環甲發力','阻抗平衡','音準','拍子','演唱計劃'],
+    demandChips: ['改善音準','改善拍子','唱到高音','唱到低音','拓寬音域','聲區連接','改善音色','改善氣息','改善咬字','高音音色','低音音色','輕鬆說話','增加續航力','唱歌有感情','唱歌有特色','真假音轉換'],
+    courseChips: ['甲杓發力','環甲發力','阻抗平衡','演唱計畫','氣息','音準','拍子'],
+    goalOptions: ['','4 堂','8 堂','12 堂','16 堂','20 堂','24 堂或以上'],
+    freqWeeks: ['—','1 週','2 週'],
+    freqTimes: ['—','1 次','2 次','3 次','4 次'],
+    diff: '差', good: '好',
+    statusMsg: '正在生成中，請稍候⋯⋯',
+    alertName: '請填寫學員姓名',
+    btnLabel: '简体',
+  },
+  cn: {
+    brandCn: '声音平衡教学系统',
+    docTitle: '学员面谈课前评估表',
+    dateLabel: '面谈日期',
+    stuName: '学员姓名',
+    stuNamePh: '请输入学员姓名',
+    coachLabel: '面谈教练',
+    coachPlaceholder: '请选择教练',
+    demandTitle: '学员诉求（数字为优先顺序）',
+    demandHint: '点选诉求后，数字会依点选顺序自动排列',
+    demandOther: '其他诉求：',
+    demandOtherPh: '请填写其他诉求（选填）',
+    evalTitle: '教练评估',
+    evalHint: '点选分数后，雷达图即时更新（1＝差　5＝好）',
+    courseTitle: '课程顺序（数字为优先顺序）',
+    courseHint: '点选后，数字会依点选顺序自动排列',
+    goalTitle: '抵达目标所需课时',
+    goalLessonsLabel: '所需课时',
+    goalLessonsPlaceholder: '请选择',
+    freqLabel: '建议上课频率（选填）',
+    freqPer: '每',
+    genBtn: '生成评估表 JPG',
+    dlBtn: '⬇ 下载 JPG 文件',
+    previewTitle: '预览（A4 格式）',
+    evalAxes: ['气息','甲杓发力','环甲发力','阻抗平衡','音准','拍子','演唱计划'],
+    demandChips: ['改善音准','改善拍子','唱到高音','唱到低音','拓宽音域','声区连接','改善音色','改善气息','改善咬字','高音音色','低音音色','轻松说话','增加续航力','唱歌有感情','唱歌有特色','真假音转换'],
+    courseChips: ['甲杓发力','环甲发力','阻抗平衡','演唱计划','气息','音准','拍子'],
+    goalOptions: ['','4 节','8 节','12 节','16 节','20 节','24 节或以上'],
+    freqWeeks: ['—','1 周','2 周'],
+    freqTimes: ['—','1 次','2 次','3 次','4 次'],
+    diff: '差', good: '好',
+    statusMsg: '正在生成中，请稍候⋯⋯',
+    alertName: '请填写学员姓名',
+    btnLabel: '繁體',
+  }
+};
+
+let currentLang = 'tw';
+
+function applyLang(lang) {
+  const L = LANGS[lang];
+
+  // data-i18n 文字節點
+  document.querySelectorAll('[data-i18n]').forEach(el => {
+    const key = el.getAttribute('data-i18n');
+    if (key === 'stuName') {
+      el.innerHTML = L.stuName + '<span class="req">*</span>';
+    } else if (key === 'coachLabel') {
+      el.innerHTML = L.coachLabel + '<span class="req">*</span>';
+    } else if (L[key] !== undefined) {
+      el.textContent = L[key];
+    }
+  });
+
+  // placeholder
+  document.querySelectorAll('[data-i18n-ph]').forEach(el => {
+    const key = el.getAttribute('data-i18n-ph');
+    if (L[key]) el.placeholder = L[key];
+  });
+
+  // coach placeholder option
+  const coachOpt = document.querySelector('#coach option[data-i18n="coachPlaceholder"]');
+  if (coachOpt) coachOpt.textContent = L.coachPlaceholder;
+
+  // goal-lessons options
+  const goalSel = document.getElementById('goal-lessons');
+  if (goalSel) {
+    [...goalSel.options].forEach((opt, i) => {
+      if (L.goalOptions[i] !== undefined) opt.textContent = L.goalOptions[i] || '';
+    });
+  }
+
+  // freq-weeks options
+  const fwSel = document.getElementById('freq-weeks');
+  if (fwSel) [...fwSel.options].forEach((opt, i) => { if (L.freqWeeks[i]) opt.textContent = L.freqWeeks[i]; });
+
+  // freq-times options
+  const ftSel = document.getElementById('freq-times');
+  if (ftSel) [...ftSel.options].forEach((opt, i) => { if (L.freqTimes[i]) opt.textContent = L.freqTimes[i]; });
+
+  // demand chips 文字與 data-val
+  const demandChips = document.querySelectorAll('#demand-group .pchip');
+  demandChips.forEach((chip, i) => {
+    if (L.demandChips[i]) {
+      chip.dataset.val = L.demandChips[i];
+      const num = chip.querySelector('.num');
+      chip.textContent = L.demandChips[i];
+      chip.prepend(num);
+    }
+  });
+
+  // course chips 文字與 data-val
+  const courseChips = document.querySelectorAll('#course-group .pchip');
+  courseChips.forEach((chip, i) => {
+    if (L.courseChips[i]) {
+      chip.dataset.val = L.courseChips[i];
+      const num = chip.querySelector('.num');
+      chip.textContent = L.courseChips[i];
+      chip.prepend(num);
+    }
+  });
+
+  // eval axes labels
+  const evalRows = document.querySelectorAll('#eval-rows > div');
+  evalRows.forEach((row, i) => {
+    const lbl = row.querySelector('div');
+    if (lbl && L.evalAxes[i]) lbl.textContent = L.evalAxes[i];
+    EVAL_AXES[i].label = L.evalAxes[i];
+  });
+  drawRadar();
+
+  // status msg
+  document.getElementById('status').textContent = L.statusMsg;
+
+  // lang button label
+  document.getElementById('lang-btn').textContent = L.btnLabel;
+
+  currentLang = lang;
+}
+
+function toggleLang() {
+  applyLang(currentLang === 'tw' ? 'cn' : 'tw');
+}
+
 </script>
 </body>
 </html>
