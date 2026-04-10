@@ -54,12 +54,12 @@ textarea { resize: vertical; min-height: 64px; }
 .chip-group { display: flex; flex-wrap: wrap; gap: 7px; }
 .pchip { position: relative; padding: 5px 12px 5px 26px; border: 1.5px solid var(--border); border-radius: 20px; font-size: 12px; color: var(--ink-soft); background: var(--red-pale); cursor: pointer; user-select: none; transition: all 0.15s; }
 .pchip:hover { border-color: var(--red); }
-.pchip.sel { border-color: var(--red); background: var(--red); color: #fff; }
+.pchip.sel { border-color: #C13318; background: #C13318; color: #fff; font-weight:700; }
 .pchip .num { position: absolute; left: 7px; top: 50%; transform: translateY(-50%); width: 15px; height: 15px; border-radius: 50%; background: rgba(0,0,0,0.1); font-size: 9px; font-weight: 700; display: flex; align-items: center; justify-content: center; }
 .pchip.sel .num { background: rgba(255,255,255,0.3); }
 .plain-chip { padding: 5px 12px; border: 1.5px solid var(--border); border-radius: 20px; font-size: 12px; color: var(--ink-soft); background: var(--red-pale); cursor: pointer; user-select: none; transition: all 0.15s; }
 .plain-chip:hover { border-color: var(--red); }
-.plain-chip.sel { background: var(--red); border-color: var(--red); color: #fff; font-weight: 600; }
+.plain-chip.sel { background: #C13318; border-color: #C13318; color: #fff; font-weight: 700; }
 .divider { height: 1px; background: var(--border); margin: 10px 0; }
 
 /* Eval rows */
@@ -110,7 +110,7 @@ textarea { resize: vertical; min-height: 64px; }
 /* Recommend coach */
 .coach-pill { display: inline-flex; align-items: center; border: 1.5px solid var(--border); border-radius: 20px; padding: 5px 12px; font-size: 12px; color: var(--muted); margin: 3px; cursor: pointer; user-select: none; transition: all 0.15s; background: var(--red-pale); }
 .coach-pill:hover { border-color: var(--red); }
-.coach-pill.sel { background: var(--red); border-color: var(--red); color: #fff; font-weight: 600; }
+.coach-pill.sel { background: #C13318; border-color: #C13318; color: #fff; font-weight: 700; }
 
 /* Generate */
 .gen-btn { width: 100%; padding: 14px; background: var(--red); color: #fff; border: none; border-radius: 8px; font-size: 15px; font-weight: 700; letter-spacing: 2px; font-family: inherit; cursor: pointer; margin-top: 1.5rem; transition: opacity 0.15s; }
@@ -410,7 +410,7 @@ function getPlanSentence(phase){
 }
 
 function drawTaggedText(ctx, html, x, y, maxW, lh){
-  // 解析 HTML，分出普通文字和 tag 文字
+  // 解析 HTML，分出普通文字和 tag 詞（整詞為單位）
   var parts = [];
   var re = /<span[^>]*>([^<]+)<\/span>|([^<]+)/g;
   var m;
@@ -419,26 +419,37 @@ function drawTaggedText(ctx, html, x, y, maxW, lh){
     else if(m[2]) parts.push({text:m[2], isTag:false});
   }
   var curX=x, curY=y;
-  ctx.font='11px "Noto Sans TC",sans-serif';
+  ctx.font='600 11px "Noto Sans TC",sans-serif';
+
   parts.forEach(function(part){
-    var words = part.text.split('');
-    words.forEach(function(ch){
-      var cw = ctx.measureText(ch).width;
-      if(curX+cw>x+maxW){ curX=x; curY+=lh; }
-      if(part.isTag){
-        // 橘色框背景
-        ctx.fillStyle='#FFF7F5';
-        ctx.fillRect(curX-1, curY-11, cw+2, 14);
-        ctx.strokeStyle='#EF4021'; ctx.lineWidth=1;
-        ctx.strokeRect(curX-1, curY-11, cw+2, 14);
-        ctx.fillStyle='#C13318'; ctx.font='600 11px "Noto Sans TC",sans-serif';
-      } else {
-        ctx.fillStyle='#1C1010'; ctx.font='11px "Noto Sans TC",sans-serif';
-      }
+    if(part.isTag){
+      // 整個詞一起量寬度，決定是否換行
+      var wordW = ctx.measureText(part.text).width;
+      var boxW = wordW + 8;
+      if(curX + boxW > x + maxW){ curX=x; curY+=lh; }
+      // 畫整個詞的橘框
+      ctx.fillStyle='#FFF7F5';
+      ctx.fillRect(curX, curY-11, boxW, 15);
+      ctx.strokeStyle='#EF4021'; ctx.lineWidth=1.2;
+      ctx.strokeRect(curX, curY-11, boxW, 15);
+      ctx.fillStyle='#C13318';
       ctx.textAlign='left';
-      ctx.fillText(ch, curX, curY);
-      curX+=cw;
-    });
+      ctx.fillText(part.text, curX+4, curY);
+      curX += boxW + 1;
+    } else {
+      // 普通文字逐字處理（支援換行）
+      ctx.font='11px "Noto Sans TC",sans-serif';
+      ctx.fillStyle='#1C1010';
+      var chars = part.text.split('');
+      chars.forEach(function(ch){
+        var cw = ctx.measureText(ch).width;
+        if(curX+cw > x+maxW){ curX=x; curY+=lh; }
+        ctx.textAlign='left';
+        ctx.fillText(ch, curX, curY);
+        curX+=cw;
+      });
+      ctx.font='600 11px "Noto Sans TC",sans-serif';
+    }
   });
   return curY+lh;
 }
@@ -460,7 +471,7 @@ function renderPlanCols(){
     PLAN_ITEMS.forEach(function(item){
       var c=document.createElement('div');
       c.style.cssText='padding:3px 8px;border:1px solid #F5CFCA;border-radius:12px;font-size:10px;color:#8C6050;background:#FFF7F5;cursor:pointer;user-select:none;transition:all 0.12s;';
-      if(planState[phase][item]){ c.style.background='#FEF0EC'; c.style.borderColor='#EF4021'; c.style.color='#C13318'; c.style.fontWeight='600'; }
+      if(planState[phase][item]){ c.style.background='#FEF0EC'; c.style.borderColor='#EF4021'; c.style.color='#8B1A1A'; c.style.fontWeight='700'; }
       c.textContent=item;
       c.onclick=(function(p,it,el2){ return function(){
         if(planState[p][it]) delete planState[p][it];
@@ -481,7 +492,7 @@ function renderPlanCols(){
       PLAN_LEVELS.forEach(function(l){
         var b=document.createElement('div');
         b.style.cssText='flex:1;padding:3px 0;text-align:center;border:1px solid #F5CFCA;border-radius:4px;font-size:10px;color:#8C6050;background:#FFF7F5;cursor:pointer;user-select:none;';
-        if(lv===l){ b.style.background='#EF4021'; b.style.borderColor='#EF4021'; b.style.color='#fff'; b.style.fontWeight='600'; }
+        if(lv===l){ b.style.background='#C13318'; b.style.borderColor='#C13318'; b.style.color='#fff'; b.style.fontWeight='700'; }
         b.textContent=l;
         b.onclick=(function(p,it,lvl){ return function(){ planState[p][it]=lvl; renderPlanCols(); }; })(phase,item,l);
         lvls.appendChild(b);
@@ -695,11 +706,14 @@ function generateReport(){
 
 function renderCanvas(){
   const SCALE=3.125;
-  const Wl=794, Hl=1123;
+  const Wl=794;
   const canvas=document.getElementById('a4-canvas');
-  canvas.width=Math.round(Wl*SCALE); canvas.height=Math.round(Hl*SCALE);
-  const ctx=canvas.getContext('2d');
+  // 先用大畫布渲染，之後裁切
+  const tmpCanvas=document.createElement('canvas');
+  tmpCanvas.width=Math.round(Wl*SCALE); tmpCanvas.height=Math.round(1800*SCALE);
+  const ctx=tmpCanvas.getContext('2d');
   ctx.scale(SCALE,SCALE);
+  const Hl=1800;
   const RED='#EF4021',RD='#C13318',RPALE='#FFF7F5',RLIGHT='#FEF0EC';
   const INK='#1C1010',MUTED='#8C6050',BORDER='#F5CFCA',WHITE='#FFFFFF';
   const L=LANG[currentLang];
@@ -830,11 +844,21 @@ function renderCanvas(){
   my=secHead(L.goalTitle,midX,my,midW);
   const goalVal=document.getElementById('goal-lessons').value;
   const goalBoxH=evalBoxH*0.55;
-  ctx.textAlign='center';
+  const goalInnerH=goalBoxH; const goalCY=my+goalInnerH/2;
+  ctx.textAlign='left';
+  const numText=goalVal||'—';
+  ctx.font='700 40px "Noto Sans TC",sans-serif';
+  const numW=ctx.measureText(numText).width;
+  ctx.font='600 14px "Noto Sans TC",sans-serif';
+  const unitW=ctx.measureText(L.goalUnit).width;
+  const totalW=numW+6+unitW;
+  const startX=midX+(midW-totalW)/2;
+  ctx.textBaseline='middle';
   ctx.fillStyle=RED; ctx.font='700 40px "Noto Sans TC",sans-serif';
-  ctx.fillText(goalVal||'—',midX+midW/2,my+goalBoxH/2+8);
-  ctx.fillStyle=MUTED; ctx.font='11px sans-serif';
-  ctx.fillText(L.goalUnit,midX+midW/2,my+goalBoxH/2+26);
+  ctx.fillText(numText, startX, goalCY-10);
+  ctx.fillStyle=MUTED; ctx.font='600 14px "Noto Sans TC",sans-serif';
+  ctx.fillText(L.goalUnit, startX+numW+6, goalCY-4);
+  ctx.textBaseline='alphabetic';
   secBox(midX,midY,midW,goalBoxH); my=midY+goalBoxH+8;
 
   // 頻率
@@ -842,7 +866,7 @@ function renderCanvas(){
   const fw=document.getElementById('freq-weeks').value, ft=document.getElementById('freq-times').value;
   const freqStr=fw||ft?(L.freqPer+' '+(fw||'—')+' '+(ft||'—')):'—';
   ctx.fillStyle=INK; ctx.font='600 13px "Noto Sans TC",sans-serif'; ctx.textAlign='center';
-  ctx.fillText(freqStr,midX+midW/2,my+22);
+  ctx.fillText(freqStr,midX+midW/2,my+32);
   const freqBoxH=evalBoxH-goalBoxH-8-30;
   secBox(midX,midY+goalBoxH+8,midW,freqBoxH+30);
 
@@ -878,54 +902,65 @@ function renderCanvas(){
   y=secHead(L.planTitle,pad,y,cW);
   y+=14;
   const planCols=[4,8,12,24];
-  const planW=(cW-3)/4;
+  const planGap=2, planInner=24;
+  const planW=(cW - planGap*3)/4;
   planCols.forEach((num,i)=>{
-    const px=pad+i*(planW+1);
-    ctx.fillStyle=RED; ctx.font='700 22px "Noto Sans TC",sans-serif'; ctx.textAlign='left';
-    ctx.fillText(num,px,y+20);
-    ctx.fillStyle=RD; ctx.font='700 9px sans-serif'; ctx.fillText(L.planUnit,px,y+33);
+    const colX = pad+i*(planW+planGap)+planInner;
+    const textW = planW-planInner*2;
+    // 數字靠左，堂課跟在旁邊
+    ctx.textAlign='left'; ctx.textBaseline='alphabetic';
+    ctx.fillStyle=RED; ctx.font='700 22px "Noto Sans TC",sans-serif';
+    const numW2=ctx.measureText(String(num)).width;
+    ctx.fillText(num, colX, y+22);
+    ctx.fillStyle=RD; ctx.font='600 10px "Noto Sans TC",sans-serif';
+    ctx.fillText(L.planUnit, colX+numW2+4, y+22);
+    // 橘底線
     ctx.strokeStyle=RED; ctx.lineWidth=2;
-    ctx.beginPath(); ctx.moveTo(px,y+38); ctx.lineTo(px+planW-4,y+38); ctx.stroke();
-    if(i<3){ctx.strokeStyle=BORDER; ctx.lineWidth=1; ctx.beginPath(); ctx.moveTo(px+planW,y-8); ctx.lineTo(px+planW,y+140); ctx.stroke();}
-    // 取得純文字句子（去掉 HTML tag）
+    ctx.beginPath(); ctx.moveTo(colX, y+30); ctx.lineTo(colX+textW, y+30); ctx.stroke();
+    // 欄分隔線
+    if(i<3){
+      const divX=pad+i*(planW+planGap)+planW+planGap/2;
+      ctx.strokeStyle=BORDER; ctx.lineWidth=1;
+      ctx.beginPath(); ctx.moveTo(divX,y-4); ctx.lineTo(divX,y+155); ctx.stroke();
+    }
     const rawSentence = getPlanSentence(num);
     const plainText = rawSentence.replace(/<[^>]+>/g,'');
     if(plainText){
-      // 畫專有名詞橘框版本
       ctx.font='11px "Noto Sans TC",sans-serif';
-      drawTaggedText(ctx, rawSentence, px, y+52, planW-6, 16);
+      drawTaggedText(ctx, rawSentence, colX, y+48, textW, 16);
     } else {
       ctx.fillStyle='#D4B0A8'; ctx.font='10px sans-serif'; ctx.textAlign='left';
-      ctx.fillText('（未選擇項目）',px,y+60);
+      ctx.fillText('（未選擇項目）',colX,y+54);
     }
   });
-  y+=150;
+  y+=160;
   secBox(pad,planY,cW,y-planY); y+=14;
 
   // ── 學習成果 ──
   const outY=y;
   y=secHead(L.outcomeTitle,pad,y,cW);
-  y+=12;
+  y+=20;
   const ocColW=(cW-2)/3;
   const src=currentLang==='cn'?OUTCOMES_CN:OUTCOMES;
+  const ocInner=12;
   const groups=[['top1','top2','top3'],['bot1','bot2','bot3']];
   groups.forEach((row,ri)=>{
     const rowStartY=y;
     row.forEach((key,ci)=>{
-      const ox=pad+ci*(ocColW+1);
+      const ox=pad+ci*(ocColW+1)+ocInner;
       src[key].forEach((txt,ti)=>{
-        const iy=y+ti*18;
+        const iy=y+ti*19;
         const uid=key+'-'+ti, isOn=outcomeState[uid];
         ctx.strokeStyle=isOn?RED:MUTED; ctx.lineWidth=1.5;
         roundRect(ctx,ox,iy-10,11,11,2); ctx.stroke();
         if(isOn){ ctx.fillStyle=RED; roundRect(ctx,ox,iy-10,11,11,2); ctx.fill(); ctx.fillStyle=WHITE; ctx.font='700 8px sans-serif'; ctx.textAlign='center'; ctx.fillText('✓',ox+5.5,iy-3); }
         ctx.fillStyle=INK; ctx.font='11px "Noto Sans TC",sans-serif'; ctx.textAlign='left';
-        ctx.fillText(txt,ox+15,iy);
+        ctx.fillText(txt,ox+16,iy);
       });
-      if(ci<2){ ctx.strokeStyle=BORDER; ctx.lineWidth=0.8; ctx.beginPath(); ctx.moveTo(pad+(ci+1)*ocColW+ci,rowStartY-4); ctx.lineTo(pad+(ci+1)*ocColW+ci,rowStartY+src[key].length*18+2); ctx.stroke(); }
+      if(ci<2){ ctx.strokeStyle=BORDER; ctx.lineWidth=0.8; ctx.beginPath(); ctx.moveTo(pad+(ci+1)*(ocColW+1)-1,rowStartY-4); ctx.lineTo(pad+(ci+1)*(ocColW+1)-1,rowStartY+src[key].length*19+2); ctx.stroke(); }
     });
-    y+=src[row[0]].length*18+8;
-    if(ri===0){ ctx.strokeStyle=BORDER; ctx.lineWidth=0.8; ctx.beginPath(); ctx.moveTo(pad,y-4); ctx.lineTo(pad+cW,y-4); ctx.stroke(); y+=6; }
+    y+=src[row[0]].length*19+6;
+    if(ri===0){ ctx.strokeStyle=BORDER; ctx.lineWidth=0.8; ctx.beginPath(); ctx.moveTo(pad+ocInner,y-4); ctx.lineTo(pad+cW-ocInner,y-4); ctx.stroke(); y+=16; }
   });
   y+=6;
   secBox(pad,outY,cW,y-outY); y+=14;
@@ -933,26 +968,33 @@ function renderCanvas(){
   // ── 推薦教練 ──
   const recY=y;
   y=secHead(L.recTitle,pad,y,cW);
-  y+=10;
+  y+=20;
   ctx.font='11px "Noto Sans TC",sans-serif';
-  let rcpx=pad+8, rcpy=y;
+  let rcpx=pad+14, rcpy=y;
   COACHES.forEach(name=>{
-    const tw=ctx.measureText(name).width+24;
-    if(rcpx+tw>pad+cW-8){rcpx=pad+8; rcpy+=24;}
+    const tw=ctx.measureText(name).width+28;
+    if(rcpx+tw>pad+cW-14){rcpx=pad+14; rcpy+=26;}
     const isSel=selectedCoach===name;
-    if(isSel){ctx.fillStyle=RED; roundRect(ctx,rcpx,rcpy-14,tw,20,10); ctx.fill(); ctx.fillStyle=WHITE;}
-    else{ctx.strokeStyle=BORDER; ctx.lineWidth=1; roundRect(ctx,rcpx,rcpy-14,tw,20,10); ctx.stroke(); ctx.fillStyle=MUTED;}
-    ctx.textAlign='left'; ctx.fillText(name,rcpx+12,rcpy);
-    rcpx+=tw+8;
+    if(isSel){ctx.fillStyle=RED; roundRect(ctx,rcpx,rcpy-14,tw,22,11); ctx.fill(); ctx.fillStyle=WHITE;}
+    else{ctx.strokeStyle=BORDER; ctx.lineWidth=1; roundRect(ctx,rcpx,rcpy-14,tw,22,11); ctx.stroke(); ctx.fillStyle=MUTED;}
+    ctx.textAlign='left'; ctx.fillText(name,rcpx+14,rcpy);
+    rcpx+=tw+10;
   });
-  y=rcpy+14;
+  y=rcpy+16;
   secBox(pad,recY,cW,y-recY); y+=14;
 
   // ── Footer ──
-  const footY=Hl-44;
+  const footY=y+10;
   ctx.fillStyle=RED; ctx.fillRect(0,footY,Wl,44);
   ctx.fillStyle='rgba(255,255,255,0.8)'; ctx.font='11px "Noto Sans TC",sans-serif'; ctx.textAlign='center';
   ctx.fillText('聲音平衡教學系統｜VOCAL BALANCE SYSTEM',Wl/2,footY+26);
+
+  // 裁切到實際內容高度
+  const finalH = footY + 50;
+  canvas.width = Math.round(Wl*SCALE);
+  canvas.height = Math.round(finalH*SCALE);
+  const finalCtx = canvas.getContext('2d');
+  finalCtx.drawImage(tmpCanvas, 0, 0);
 }
 
 function downloadJPG(){
