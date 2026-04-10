@@ -270,6 +270,16 @@ var selectedCoaches = [];
 var currentLang = 'tw';
 var ganttState = {};
 var GANTT_ITEMS = ['甲杓發力','環甲發力','阻抗平衡','演唱計畫','氣息','音準','拍子'];
+var GANTT_ITEMS_CN = ['甲杓发力','环甲发力','阻抗平衡','演唱计划','气息','音准','拍子'];
+var DEMAND_CN_MAP = {
+  '改善音準':'改善音准','改善拍子':'改善拍子','唱到高音':'唱到高音',
+  '唱到低音':'唱到低音','拓寬音域':'拓宽音域','聲區連接':'声区连接',
+  '改善音色':'改善音色','改善氣息':'改善气息','改善咬字':'改善咬字',
+  '高音音色':'高音音色','低音音色':'低音音色','輕鬆說話':'轻松说话',
+  '增加續航力':'增加续航力','唱歌有感情':'唱歌有感情',
+  '唱歌有特色':'唱歌有特色','真假音轉換':'真假音转换'
+};
+function getGanttItems(){ return currentLang==='cn' ? GANTT_ITEMS_CN : GANTT_ITEMS; }
 GANTT_ITEMS.forEach(function(it){ ganttState[it] = {s:null, e:null}; });
 
 // ======== 初始化日期 ========
@@ -478,7 +488,8 @@ function ganttDraw(){
     }
     if(omap[it]){ ctx.fillStyle='#EF4021'; ctx.font='700 10px sans-serif'; ctx.textAlign='left'; ctx.fillText(omap[it],18,ry+G_RH/2+4); }
     ctx.fillStyle='#4A2010'; ctx.font='600 11px "Noto Sans TC",sans-serif'; ctx.textAlign='right';
-    ctx.fillText(it, G_LW-8, ry+G_RH/2+4);
+    var dispIt = currentLang==='cn' ? GANTT_ITEMS_CN[GANTT_ITEMS.indexOf(it)] : it;
+    ctx.fillText(dispIt||it, G_LW-8, ry+G_RH/2+4);
   });
 }
 function ganttInit(){
@@ -534,7 +545,7 @@ function ganttReset(){
 var LANG = {
   tw:{
     brandCn:'聲音平衡教學系統', docTitle:'學員課前面談評估表',
-    lblName:'學員姓名', lblCoach:'面談教練', lblDate:'面談日期',
+    lblBasic:'基本資料', lblName:'學員姓名', lblCoach:'面談教練', lblDate:'面談日期',
     coachPh:'請選擇教練', namePh:'請輸入學員姓名',
     headDemand:'學生訴求', hintDemand:'點選後，數字依點選順序自動排列',
     lblOther:'其他訴求：', otherPh:'請填寫其他訴求（選填，最多 30 字）',
@@ -547,7 +558,7 @@ var LANG = {
   },
   cn:{
     brandCn:'声音平衡教学系统', docTitle:'学员课前面谈评估表',
-    lblName:'学员姓名', lblCoach:'面谈教练', lblDate:'面谈日期',
+    lblBasic:'基本资料', lblName:'学员姓名', lblCoach:'面谈教练', lblDate:'面谈日期',
     coachPh:'请选择教练', namePh:'请输入学员姓名',
     headDemand:'学生诉求', hintDemand:'点选后，数字依点选顺序自动排列',
     lblOther:'其他诉求：', otherPh:'请填写其他诉求（选填，最多 30 字）',
@@ -561,6 +572,7 @@ var LANG = {
 };
 
 function applyLang(lang){
+  currentLang = lang;
   var L = LANG[lang];
   document.getElementById('docTitle').textContent = L.docTitle;
   document.getElementById('lbl-name').innerHTML = L.lblName+'<span class="req">*</span>';
@@ -577,7 +589,6 @@ function applyLang(lang){
   document.getElementById('goal-unit-lbl').textContent = L.goalUnit;
   document.getElementById('goal-ph').textContent = L.goalPh;
   document.getElementById('head-freq').textContent = L.headFreq;
-  document.getElementById('freq-per').textContent = L.freqPer;
   document.getElementById('fw1').textContent = L.fw1;
   document.getElementById('fw2').textContent = L.fw2;
   document.getElementById('head-plan').textContent = L.headPlan;
@@ -585,8 +596,10 @@ function applyLang(lang){
   document.getElementById('gantt-reset-btn').textContent = L.ganttReset;
   document.getElementById('head-outcome').textContent = L.headOutcome;
   document.getElementById('head-rec').textContent = L.headRec;
+  document.getElementById('lbl-basic').textContent = L.lblBasic;
   document.getElementById('gen-btn').textContent = L.genBtn;
   document.getElementById('lang-btn').textContent = L.btnLabel;
+  updateFreq();
   // eval axes labels
   document.querySelectorAll('.eval-lbl').forEach(function(el){
     var key = el.dataset.key;
@@ -596,7 +609,14 @@ function applyLang(lang){
   buildOutcomes(lang);
   drawRadar();
   ganttDraw();
-  currentLang = lang;
+  // 更新學生訴求 chip 文字（demandCNmap 已在全域定義）
+  document.querySelectorAll('#demand-group .pchip').forEach(function(chip){
+    var val = chip.dataset.val;
+    var numEl = chip.querySelector('.num');
+    var displayText = lang==='cn' ? (DEMAND_CN_MAP[val]||val) : val;
+    chip.textContent = displayText;
+    if(numEl) chip.insertBefore(numEl, chip.firstChild);
+  });
 }
 function toggleLang(){ applyLang(currentLang==='tw'?'cn':'tw'); }
 
@@ -664,21 +684,24 @@ function renderCanvas(){
   var pad=44, cW=Wl-pad*2;
 
   ctx.fillStyle='#FFFFFF'; ctx.fillRect(0,0,Wl,Hl);
-  ctx.fillStyle=WHITE; ctx.fillRect(0,0,Wl,88);
-
-  // logo 左側
+  // ── Header ──
+  // logo 置中，白底
+  ctx.fillStyle=WHITE; ctx.fillRect(0,0,Wl,70);
   var logoImg = document.getElementById('brand-img');
   if(logoImg && logoImg.complete && logoImg.naturalWidth>0){
     var logoH = 46, logoW = logoImg.naturalWidth*(logoH/logoImg.naturalHeight);
-    ctx.drawImage(logoImg, 30, 44-logoH/2, logoW, logoH);
+    ctx.drawImage(logoImg, (Wl-logoW)/2, 35-logoH/2, logoW, logoH);
   } else {
-    ctx.fillStyle=RED; ctx.beginPath(); ctx.arc(60,44,22,0,Math.PI*2); ctx.fill();
-    ctx.fillStyle=WHITE; ctx.font='700 12px sans-serif'; ctx.textAlign='center'; ctx.fillText('VBS',60,49);
+    ctx.fillStyle=RED; ctx.beginPath(); ctx.arc(Wl/2,35,20,0,Math.PI*2); ctx.fill();
+    ctx.fillStyle=WHITE; ctx.font='700 12px sans-serif'; ctx.textAlign='center'; ctx.fillText('VBS',Wl/2,39);
   }
 
-  // title 右側，與 logo 並排
-  ctx.fillStyle=RED; ctx.font='700 18px "Noto Sans TC",sans-serif'; ctx.textAlign='right';
-  ctx.fillText(L.docTitle, Wl-30, 44+7);
+  // 標題紅底置中（緊接在 logo 下方）
+  ctx.fillStyle=RED; ctx.fillRect(0,70,Wl,44);
+  ctx.fillStyle=WHITE; ctx.font='700 20px "Noto Sans TC",sans-serif'; ctx.textAlign='center';
+  ctx.fillText(L.docTitle, Wl/2, 70+28);
+
+
 
   function secHead(title,x,y,w){
     ctx.fillStyle='#FFFFFF'; ctx.fillRect(x,y,w,36);
@@ -691,7 +714,7 @@ function renderCanvas(){
   function secBox(x,y,w,h){ ctx.strokeStyle=BORDER; ctx.lineWidth=0.8; rr(ctx,x,y,w,h,10); ctx.stroke(); }
   function secFill(x,y,w,h){ ctx.fillStyle=WHITE; rr(ctx,x,y,w,h,10); ctx.fill(); }
 
-  var y = 100;
+  var y = 126;
 
   // 基本資料
   var basicY=y;
@@ -700,8 +723,8 @@ function renderCanvas(){
   var cW3 = cW/3;
   [[L.lblName.replace('*','').trim(), nameVal2],[L.lblCoach.replace('*','').trim(), coach],[L.lblDate, getDate()]].forEach(function(pair,i){
     var x=pad+i*cW3+16;
-    ctx.fillStyle=MUTED; ctx.font='10px sans-serif'; ctx.textAlign='left'; ctx.fillText(pair[0],x,y+18);
-    ctx.fillStyle=INK; ctx.font='600 14px "Noto Sans TC",sans-serif'; ctx.fillText(pair[1],x,y+36);
+    ctx.fillStyle=MUTED; ctx.font='11px sans-serif'; ctx.textAlign='left'; ctx.fillText(pair[0],x,y+18);
+    ctx.fillStyle=INK; ctx.font='700 16px "Noto Sans TC",sans-serif'; ctx.fillText(pair[1],x,y+38);
     if(i<2){ ctx.strokeStyle=BORDER; ctx.lineWidth=0.5; ctx.beginPath(); ctx.moveTo(pad+(i+1)*cW3,y+10); ctx.lineTo(pad+(i+1)*cW3,y+52); ctx.stroke(); }
   });
   y+=60;
@@ -711,20 +734,21 @@ function renderCanvas(){
   var s1y=y; y=secHead(L.headDemand,pad,y,cW); y+=14;
   ctx.font='11px "Noto Sans TC",sans-serif';
   var dChips=document.querySelectorAll('#demand-group .pchip');
-  var dcx=pad+8, dcy=y, chipH=20, cgx=8, cgy=7;
+  var dcx=pad+8, dcy=y, chipH=22, cgx=8, cgy=8;
   dChips.forEach(function(chip){
     var val=chip.dataset.val, isSel=chip.classList.contains('sel');
+    var dispVal = currentLang==='cn' ? (DEMAND_CN_MAP[val]||val) : val;
     var numVal=isSel?demandOrder.indexOf(val)+1:0;
-    var tw=ctx.measureText(val).width, cw2=tw+(isSel?42:22);
+    var tw=ctx.measureText(dispVal).width, cw2=tw+(isSel?42:22);
     if(dcx+cw2>pad+cW-8){ dcx=pad+8; dcy+=chipH+cgy; }
     if(isSel){
       ctx.fillStyle='#C13318'; rr(ctx,dcx,dcy,cw2,chipH,10); ctx.fill();
       ctx.fillStyle='rgba(255,255,255,0.25)'; ctx.beginPath(); ctx.arc(dcx+11,dcy+chipH/2,8,0,Math.PI*2); ctx.fill();
       ctx.fillStyle='#C13318'; ctx.font='bold 9px sans-serif'; ctx.textAlign='center'; ctx.fillText(numVal,dcx+11,dcy+chipH/2+3.5);
-      ctx.fillStyle=WHITE; ctx.font='11px "Noto Sans TC",sans-serif'; ctx.textAlign='left'; ctx.fillText(val,dcx+22,dcy+chipH/2+4.5);
+      ctx.fillStyle=WHITE; ctx.font='600 12px "Noto Sans TC",sans-serif'; ctx.textAlign='left'; ctx.fillText(dispVal,dcx+22,dcy+chipH/2+4.5);
     } else {
       ctx.strokeStyle=BORDER; ctx.lineWidth=1; rr(ctx,dcx,dcy,cw2,chipH,10); ctx.stroke();
-      ctx.fillStyle='#C0A0A0'; ctx.font='11px "Noto Sans TC",sans-serif'; ctx.textAlign='left'; ctx.fillText(val,dcx+10,dcy+chipH/2+4.5);
+      ctx.fillStyle='#C0A0A0'; ctx.font='12px "Noto Sans TC",sans-serif'; ctx.textAlign='left'; ctx.fillText(dispVal,dcx+10,dcy+chipH/2+4.5);
     }
     dcx+=cw2+cgx;
   });
@@ -757,7 +781,7 @@ function renderCanvas(){
     var lx2=rcx2+(rr2+18)*Math.cos(ang3), ly2=rcy2+(rr2+18)*Math.sin(ang3);
     ctx.font='600 10px "Noto Sans TC",sans-serif'; ctx.fillStyle='#4A2010';
     ctx.textAlign=Math.abs(Math.cos(ang3))<0.15?'center':Math.cos(ang3)>0?'left':'right';
-    ctx.fillText(currentLang==='tw'?axis.tw:axis.cn, lx2, ly2+3);
+    ctx.font='700 11px "Noto Sans TC",sans-serif'; ctx.fillText(currentLang==='tw'?axis.tw:axis.cn, lx2, ly2+3);
   });
   var rvals=EVAL_AXES.map(function(a){ return evalScores[a.key]||0; });
   ctx.beginPath();
@@ -780,22 +804,22 @@ function renderCanvas(){
   var gunitW=ctx.measureText(L.goalUnit).width;
   var gstartX=midX+(midW-gnumW-6-gunitW)/2;
   ctx.fillStyle=RED; ctx.font='700 40px "Noto Sans TC",sans-serif'; ctx.fillText(goalVal,gstartX,goalCY-10);
-  ctx.fillStyle=MUTED; ctx.font='600 14px "Noto Sans TC",sans-serif'; ctx.fillText(L.goalUnit,gstartX+gnumW+6,goalCY-4);
+  ctx.fillStyle=MUTED; ctx.font='700 16px "Noto Sans TC",sans-serif'; ctx.fillText(L.goalUnit,gstartX+gnumW+6,goalCY-2);
   ctx.textBaseline='alphabetic'; secBox(midX,midY,midW,goalBoxH); my=midY+goalBoxH+8;
 
   // 頻率
   my=secHead(L.headFreq,midX,my,midW);
   var fw=document.getElementById('freq-weeks').value, ft=document.getElementById('freq-times').value;
   var freqStr=fw||ft?(L.freqPer+' '+(fw||'—')+' '+(ft||'—')):'—';
-  ctx.fillStyle=INK; ctx.font='600 13px "Noto Sans TC",sans-serif'; ctx.textAlign='center';
-  ctx.fillText(freqStr,midX+midW/2,my+32);
+  ctx.fillStyle=INK; ctx.font='700 15px "Noto Sans TC",sans-serif'; ctx.textAlign='center';
+  ctx.fillText(freqStr,midX+midW/2,my+34);
   var freqBoxH=evalBoxH-goalBoxH-8-30; secBox(midX,midY+goalBoxH+8,midW,freqBoxH+30);
   secBox(evalX,midY,evalW,evalBoxH);
   y=midY+evalBoxH+14;
 
   // 甘特圖
   var planY=y; y=secHead(L.headPlan,pad,y,cW); y+=10;
-  var gNC2=G_NC, gCW2=cW/gNC2, gRH2=28, gAH2=24;
+  var gNC2=G_NC, gCW2=cW/gNC2, gRH2=32, gAH2=26;
   var gTrackX=pad+G_LW, gTrackW=cW-G_LW;
   ctx.fillStyle='#FFF7F5'; rr(ctx,gTrackX,y,gTrackW,gAH2,0); ctx.fill();
   ctx.strokeStyle=RED; ctx.lineWidth=1.5; ctx.beginPath(); ctx.moveTo(gTrackX,y+gAH2); ctx.lineTo(pad+cW,y+gAH2); ctx.stroke();
@@ -830,8 +854,9 @@ function renderCanvas(){
     }
     // label 文字（畫在橫條之後）
     if(gomap[it]){ ctx.fillStyle=RED; ctx.font='700 9px sans-serif'; ctx.textAlign='left'; ctx.fillText(gomap[it],pad+14,ry3+gRH2/2+3); }
-    ctx.fillStyle='#4A2010'; ctx.font='600 10px "Noto Sans TC",sans-serif'; ctx.textAlign='right';
-    ctx.fillText(it, gTrackX-8, ry3+gRH2/2+3);
+    ctx.fillStyle='#4A2010'; ctx.font='600 12px "Noto Sans TC",sans-serif'; ctx.textAlign='right';
+    var dispIt3 = currentLang==='cn' ? GANTT_ITEMS_CN[GANTT_ITEMS.indexOf(it)] : it;
+    ctx.fillText(dispIt3||it, gTrackX-8, ry3+gRH2/2+3);
   });
   y+=gAH2+GANTT_ITEMS.length*gRH2+8;
   secBox(pad,planY,cW,y-planY); y+=14;
@@ -846,10 +871,10 @@ function renderCanvas(){
     row.forEach(function(key,ci4){
       var ox=pad+ci4*(ocColW+1)+ocInner;
       outSrc[key].forEach(function(txt,ti){
-        var iy=y+ti*19, uid2=key+'-'+ti, isOn=outcomeState[uid2];
+        var iy=y+ti*21, uid2=key+'-'+ti, isOn=outcomeState[uid2];
         ctx.strokeStyle=isOn?RED:MUTED; ctx.lineWidth=1.5; rr(ctx,ox,iy-10,11,11,2); ctx.stroke();
         if(isOn){ ctx.fillStyle=RED; rr(ctx,ox,iy-10,11,11,2); ctx.fill(); ctx.fillStyle=WHITE; ctx.font='700 8px sans-serif'; ctx.textAlign='center'; ctx.fillText('v',ox+5.5,iy-3); }
-        ctx.fillStyle=INK; ctx.font='11px "Noto Sans TC",sans-serif'; ctx.textAlign='left'; ctx.fillText(txt,ox+16,iy);
+        ctx.fillStyle=INK; ctx.font='12px "Noto Sans TC",sans-serif'; ctx.textAlign='left'; ctx.fillText(txt,ox+16,iy);
       });
       if(ci4<2){ ctx.strokeStyle=BORDER; ctx.lineWidth=0.8; ctx.beginPath(); ctx.moveTo(pad+(ci4+1)*(ocColW+1)-1,rowStartY-4); ctx.lineTo(pad+(ci4+1)*(ocColW+1)-1,rowStartY+outSrc[key].length*19+2); ctx.stroke(); }
     });
@@ -860,7 +885,7 @@ function renderCanvas(){
 
   // 推薦教練
   var recY=y; y=secHead(L.headRec,pad,y,cW); y+=20;
-  ctx.font='11px "Noto Sans TC",sans-serif';
+  ctx.font='12px "Noto Sans TC",sans-serif';
   var rpx=pad+14, rpy=y;
   COACHES.forEach(function(name){
     var pw=ctx.measureText(name).width+28;
