@@ -182,8 +182,11 @@ select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/
 <div class="card">
   <div class="card-title" id="head-plan">課程規劃</div>
   <canvas id="gantt-canvas" style="width:100%;display:block;cursor:crosshair;"></canvas>
-  <div style="font-size:11px;color:var(--muted);margin-top:10px;padding-top:8px;border-top:1px solid var(--rb);" id="gantt-hint">點格子設起點，再點設終點，第三下清除</div>
-  <button onclick="ganttReset()" style="margin-top:8px;padding:4px 14px;border:1.5px solid var(--rb);border-radius:12px;font-size:11px;color:var(--muted);background:#FAFAFA;cursor:pointer;font-family:inherit;" id="gantt-reset-btn">全部清除</button>
+  <div style="font-size:11px;color:var(--muted);margin-top:10px;padding-top:8px;border-top:1px solid var(--rb);" id="gantt-hint">點左側項目名稱加順序數字；點格子設起點，再點設終點，第三下清除</div>
+  <div style="display:flex;gap:8px;margin-top:8px;">
+    <button onclick="ganttReset()" style="padding:4px 14px;border:1.5px solid var(--rb);border-radius:12px;font-size:11px;color:var(--muted);background:#FAFAFA;cursor:pointer;font-family:inherit;" id="gantt-reset-btn">全部清除</button>
+    <button onclick="ganttOrderReset();" style="padding:4px 14px;border:1.5px solid var(--rb);border-radius:12px;font-size:11px;color:var(--muted);background:#FAFAFA;cursor:pointer;font-family:inherit;" id="gantt-order-reset-btn">重置順序</button>
+  </div>
 </div>
 
 <div class="card">
@@ -281,6 +284,7 @@ var DEMAND_CN_MAP = {
 };
 function getGanttItems(){ return currentLang==='cn' ? GANTT_ITEMS_CN : GANTT_ITEMS; }
 GANTT_ITEMS.forEach(function(it){ ganttState[it] = {s:null, e:null}; });
+var ganttOrder = [];
 
 // ======== 初始化日期 ========
 (function(){
@@ -425,13 +429,7 @@ function ganttRangeLabel(si,ei){
   var s=GANTT_CELLS[si].s, e=GANTT_CELLS[ei].e;
   return currentLang==='cn' ? s+'-'+e+'节' : s+'-'+e+'堂';
 }
-function ganttSorted(){
-  return GANTT_ITEMS.slice().sort(function(a,b){
-    var sa=ganttState[a].s, sb=ganttState[b].s;
-    if(sa===null&&sb===null) return GANTT_ITEMS.indexOf(a)-GANTT_ITEMS.indexOf(b);
-    if(sa===null) return 1; if(sb===null) return -1; return sa-sb;
-  });
-}
+function ganttSorted(){ return GANTT_ITEMS.slice(); }
 function ganttCellX(ci,W){ return G_LW + ci*((W-G_LW)/G_NC); }
 function ganttXToCell(x,W){ return Math.max(0,Math.min(G_NC-1,Math.floor((x-G_LW)/((W-G_LW)/G_NC)))); }
 function ganttRR(ctx,x,y,w,h,r){
@@ -485,6 +483,13 @@ function ganttDraw(){
       ctx.fillStyle='rgba(239,64,33,0.12)'; ganttRR(ctx,bx3+3,ry+G_BP,CW-6,G_RH-G_BP*2,3); ctx.fill();
       ctx.strokeStyle='rgba(239,64,33,0.4)'; ctx.lineWidth=1; ganttRR(ctx,bx3+3,ry+G_BP,CW-6,G_RH-G_BP*2,3); ctx.stroke();
     }
+    var orderNum = ganttOrder.indexOf(it)+1;
+    if(orderNum>0){
+      ctx.fillStyle='#EF4021'; ctx.font='700 10px sans-serif'; ctx.textAlign='left';
+      ctx.fillText(orderNum, 18, ry+G_RH/2+4);
+    }
+    var orderNum = ganttOrder.indexOf(it)+1;
+    if(orderNum>0){ ctx.fillStyle='#EF4021'; ctx.font='700 10px sans-serif'; ctx.textAlign='left'; ctx.fillText(orderNum,18,ry+G_RH/2+4); }
     ctx.fillStyle='#4A2010'; ctx.font='600 11px "Noto Sans TC",sans-serif'; ctx.textAlign='right';
     var dispIt = currentLang==='cn' ? GANTT_ITEMS_CN[GANTT_ITEMS.indexOf(it)] : it;
     ctx.fillText(dispIt||it, G_LW-8, ry+G_RH/2+4);
@@ -497,10 +502,19 @@ function ganttInit(){
     var r=canvas.getBoundingClientRect();
     var x=(e.clientX-r.left)*(canvas.width/r.width);
     var y=(e.clientY-r.top)*(canvas.height/r.height);
-    if(x<G_LW) return;
     var ri=Math.floor((y-G_AH)/G_RH);
     if(ri<0||ri>=GANTT_ITEMS.length) return;
-    var sorted=ganttSorted(), it=sorted[ri], ci=ganttXToCell(x,canvas.width), s2=ganttState[it];
+    var sorted=ganttSorted(), it=sorted[ri];
+    if(x<G_LW){
+      // 點 label 區：切換順序數字
+      var oi=ganttOrder.indexOf(it);
+      if(oi>-1) ganttOrder.splice(oi,1);
+      else ganttOrder.push(it);
+      ganttDraw();
+      return;
+    }
+    // 點 track 區：設起點/終點/清除
+    var ci=ganttXToCell(x,canvas.width), s2=ganttState[it];
     if(s2.s===null){ s2.s=ci; s2.e=null; }
     else if(s2.e===null){ s2.e=Math.max(ci,s2.s); }
     else { s2.s=null; s2.e=null; }
@@ -511,7 +525,16 @@ function ganttInit(){
     var x=(e.clientX-r.left)*(canvas.width/r.width);
     var y=(e.clientY-r.top)*(canvas.height/r.height);
     var tip=document.getElementById('gantt-tip');
-    if(x<G_LW){ tip.style.display='none'; return; }
+    if(x<G_LW){
+      var ri2=Math.floor((y-G_AH)/G_RH);
+      if(ri2>=0&&ri2<GANTT_ITEMS.length){
+        var it2=ganttSorted()[ri2];
+        var inOrder=ganttOrder.indexOf(it2)>-1;
+        tip.textContent=inOrder?'點擊移除順序':'點擊加入順序';
+        tip.style.display='block'; tip.style.left=(e.clientX+12)+'px'; tip.style.top=(e.clientY-28)+'px';
+      } else { tip.style.display='none'; }
+      return;
+    }
     var ci=ganttXToCell(x,canvas.width);
     var ri=Math.floor((y-G_AH)/G_RH);
     if(ri<0||ri>=GANTT_ITEMS.length){ tip.style.display='none'; return; }
@@ -534,6 +557,7 @@ function updateFreq(){
   document.getElementById('freq-display').textContent = fw||ft ? (L.freqPer+' '+(fw||'—')+' '+(ft||'—')) : '—';
 }
 
+function ganttOrderReset(){ ganttOrder=[]; ganttDraw(); }
 function ganttReset(){
   GANTT_ITEMS.forEach(function(it){ ganttState[it]={s:null,e:null}; });
   ganttDraw();
@@ -592,6 +616,7 @@ function applyLang(lang){
   document.getElementById('head-plan').textContent = L.headPlan;
   document.getElementById('gantt-hint').textContent = L.ganttHint;
   document.getElementById('gantt-reset-btn').textContent = L.ganttReset;
+  document.getElementById('gantt-order-reset-btn').textContent = L.ganttOrderReset;
   document.getElementById('head-outcome').textContent = L.headOutcome;
   document.getElementById('head-rec').textContent = L.headRec;
   document.getElementById('lbl-basic').textContent = L.lblBasic;
