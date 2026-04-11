@@ -269,8 +269,8 @@ var outcomeState = {};
 var selectedCoaches = [];
 var currentLang = 'tw';
 var ganttState = {};
-var GANTT_ITEMS = ['甲杓發力','環甲發力','阻抗平衡','演唱計畫','氣息','音準','拍子'];
-var GANTT_ITEMS_CN = ['甲杓发力','环甲发力','阻抗平衡','演唱计划','气息','音准','拍子'];
+var GANTT_ITEMS = ['音準','拍子','氣息','甲杓發力','環甲發力','阻抗平衡','演唱計畫'];
+var GANTT_ITEMS_CN = ['音准','拍子','气息','甲杓发力','环甲发力','阻抗平衡','演唱计划'];
 var DEMAND_CN_MAP = {
   '改善音準':'改善音准','改善拍子':'改善拍子','唱到高音':'唱到高音',
   '唱到低音':'唱到低音','拓寬音域':'拓宽音域','聲區連接':'声区连接',
@@ -448,8 +448,7 @@ function ganttDraw(){
   var ctx = canvas.getContext('2d');
   var CW = (W-G_LW)/G_NC;
   ctx.clearRect(0,0,W,canvas.height);
-  var sorted = ganttSorted(), onum=1, omap={};
-  sorted.forEach(function(it){ if(ganttState[it].s!==null&&ganttState[it].e!==null) omap[it]=onum++; });
+  var sorted = ganttSorted();
   // axis
   ctx.fillStyle='#FFF7F5'; ctx.fillRect(G_LW,0,W-G_LW,G_AH);
   ctx.strokeStyle='#EF4021'; ctx.lineWidth=2;
@@ -486,7 +485,6 @@ function ganttDraw(){
       ctx.fillStyle='rgba(239,64,33,0.12)'; ganttRR(ctx,bx3+3,ry+G_BP,CW-6,G_RH-G_BP*2,3); ctx.fill();
       ctx.strokeStyle='rgba(239,64,33,0.4)'; ctx.lineWidth=1; ganttRR(ctx,bx3+3,ry+G_BP,CW-6,G_RH-G_BP*2,3); ctx.stroke();
     }
-    if(omap[it]){ ctx.fillStyle='#EF4021'; ctx.font='700 10px sans-serif'; ctx.textAlign='left'; ctx.fillText(omap[it],18,ry+G_RH/2+4); }
     ctx.fillStyle='#4A2010'; ctx.font='600 11px "Noto Sans TC",sans-serif'; ctx.textAlign='right';
     var dispIt = currentLang==='cn' ? GANTT_ITEMS_CN[GANTT_ITEMS.indexOf(it)] : it;
     ctx.fillText(dispIt||it, G_LW-8, ry+G_RH/2+4);
@@ -832,8 +830,7 @@ function renderCanvas(){
     ctx.strokeStyle=RED; ctx.lineWidth=0.7; ctx.beginPath(); ctx.moveTo(ggx2,y+gAH2-4); ctx.lineTo(ggx2,y+gAH2); ctx.stroke();
   }
   ctx.strokeStyle=RED; ctx.lineWidth=0.7; ctx.beginPath(); ctx.moveTo(pad+cW,y+gAH2-4); ctx.lineTo(pad+cW,y+gAH2); ctx.stroke();
-  var gSorted=ganttSorted(), gonum=1, gomap={};
-  gSorted.forEach(function(it){ if(ganttState[it].s!==null&&ganttState[it].e!==null) gomap[it]=gonum++; });
+  var gSorted=ganttSorted();
   gSorted.forEach(function(it,ri3){
     var ry3=y+gAH2+ri3*gRH2, s3=ganttState[it];
     ctx.fillStyle=ri3%2===0?'#ffffff':'#FDFAFA'; ctx.fillRect(pad,ry3,cW,gRH2);
@@ -853,7 +850,6 @@ function renderCanvas(){
       if(gbw>40) ctx.fillText(ganttRangeLabel(s3.s,s3.e),gbx+gbw/2,ry3+gRH2/2+3);
     }
     // label 文字（畫在橫條之後）
-    if(gomap[it]){ ctx.fillStyle=RED; ctx.font='700 9px sans-serif'; ctx.textAlign='left'; ctx.fillText(gomap[it],pad+14,ry3+gRH2/2+3); }
     ctx.fillStyle='#4A2010'; ctx.font='600 12px "Noto Sans TC",sans-serif'; ctx.textAlign='right';
     var dispIt3 = currentLang==='cn' ? GANTT_ITEMS_CN[GANTT_ITEMS.indexOf(it)] : it;
     ctx.fillText(dispIt3||it, gTrackX-8, ry3+gRH2/2+3);
