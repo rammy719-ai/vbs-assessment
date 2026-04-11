@@ -440,7 +440,8 @@ function ganttRR(ctx,x,y,w,h,r){
 function ganttDraw(){
   var canvas = document.getElementById('gantt-canvas');
   if(!canvas) return;
-  var W = canvas.parentElement.clientWidth - 28;
+  var W = Math.floor(canvas.parentElement.getBoundingClientRect().width - 28);
+  if(W<=0) W = 600;
   canvas.width = W; canvas.height = G_AH + GANTT_ITEMS.length*G_RH + 4;
   canvas.style.height = canvas.height+'px';
   var ctx = canvas.getContext('2d');
@@ -500,8 +501,11 @@ function ganttInit(){
   if(!canvas) return;
   canvas.onclick = function(e){
     var r=canvas.getBoundingClientRect();
-    var x=(e.clientX-r.left)*(canvas.width/r.width);
-    var y=(e.clientY-r.top)*(canvas.height/r.height);
+    var scaleX=canvas.width/r.width, scaleY=canvas.height/r.height;
+    var clientX=e.touches?e.touches[0].clientX:e.clientX;
+    var clientY=e.touches?e.touches[0].clientY:e.clientY;
+    var x=(clientX-r.left)*scaleX;
+    var y=(clientY-r.top)*scaleY;
     var ri=Math.floor((y-G_AH)/G_RH);
     if(ri<0||ri>=GANTT_ITEMS.length) return;
     var sorted=ganttSorted(), it=sorted[ri];
@@ -524,6 +528,7 @@ function ganttInit(){
     var r=canvas.getBoundingClientRect();
     var x=(e.clientX-r.left)*(canvas.width/r.width);
     var y=(e.clientY-r.top)*(canvas.height/r.height);
+    if(e.touches){ x=(e.touches[0].clientX-r.left)*(canvas.width/r.width); y=(e.touches[0].clientY-r.top)*(canvas.height/r.height); }
     var tip=document.getElementById('gantt-tip');
     if(x<G_LW){
       var ri2=Math.floor((y-G_AH)/G_RH);
@@ -544,6 +549,10 @@ function ganttInit(){
     tip.style.left=(e.clientX+12)+'px'; tip.style.top=(e.clientY-28)+'px';
   };
   canvas.onmouseleave = function(){ document.getElementById('gantt-tip').style.display='none'; };
+  canvas.addEventListener('touchstart', function(e){
+    e.preventDefault();
+    canvas.onclick(e);
+  }, {passive:false});
   ganttDraw();
   window.addEventListener('resize', ganttDraw);
 }
